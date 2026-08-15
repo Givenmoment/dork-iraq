@@ -52,4 +52,134 @@ function pickMapLocation(e){let r=e.currentTarget.getBoundingClientRect(),x=Math
 function saveSalonLocation(){let name=$('#salonMapName').value.trim(),area=$('#salonMapArea').value.trim();if(!pickedLocation)return toast('اضغط على الخريطة لتحديد الموقع');if(!name||!area)return toast('اكتب اسم الصالون والمنطقة');let salon={name,area,x:pickedLocation.x,y:pickedLocation.y};db.set('maw3idiSalonLocation',salon);renderCustomSalon(salon);toast('تم نشر الصالون على الخريطة ✓')}
 function renderCustomSalon(s){if(!s)return;let n=esc(s.name),a=esc(s.area),x=Math.max(5,Math.min(95,+s.x||50)),y=Math.max(5,Math.min(95,+s.y||50));$('#customPins').innerHTML=`<button class="pin custom-pin" data-name="${n} ${a}" style="left:${x}%;top:${y}%;transform:translate(-50%,-50%) rotate(-45deg)" onclick="selectSalon(this.dataset.salon,this.dataset.area,'جديد')" data-salon="${n}" data-area="${a}">✂️</button>`;let old=$('#customSalonCard');if(old)old.remove();$('#salonList').insertAdjacentHTML('beforeend',`<article class="barber" id="customSalonCard" data-search="${n} ${a}" onclick="selectSalon(this.dataset.salon,this.dataset.area,'جديد')" data-salon="${n}" data-area="${a}"><div class="avatar">✂️</div><div class="grow"><b>${n}</b><small><span class="rating">★ جديد</span> • ${a} • مشترك</small></div><button class="primary">عرض</button></article>`);$('#salonCount').textContent=$$('#salonList .barber').length+' صالون'}
 (function(){injectV51();let p=db.get('maw3idiPrices',defaults);renderServices(p);renderPrices(p);let st=db.get('maw3idiStatus','علي الحلاق متأخر 20 دقيقة اليوم');$('#statusMsg').value=st;$('#publicNotice').textContent='⏱️ '+st;$('#ads').classList.toggle('on',db.get('maw3idiAds',true));renderBooking(db.get('maw3idiBooking',null));updateBarberAccess();injectLocationEditor();renderDirectory();renderCustomSalon(db.get('maw3idiSalonLocation',null));let fav=db.get('maw3idiFavorite',false);$$('.fav').forEach(x=>{x.classList.toggle('on',fav);x.textContent=fav?'♥':'♡'});$('#reminderState').textContent=db.get('maw3idiReminders',true)?'مفعّلة':'متوقفة';let n=db.get('maw3idiBarberNotice',null);if(n){setTimeout(()=>toast(n),500);db.set('maw3idiBarberNotice',null)}})();
-</script></body></html>
+</script>
+<script>
+/* Maw3idi 5.3 — verified barber identity and searchable directory */
+(function(){
+const seedIdentity={
+ali:{old:'علي الحلاق',name:'علي حسن عباس',displayName:'علي الحلاق'},
+mustafa:{old:'مصطفى كريم',name:'مصطفى كريم جاسم',displayName:'مصطفى الحلاق'},
+haider:{old:'حيدر عباس',name:'حيدر عباس كاظم',displayName:'حيدر ستايل'},
+omar:{old:'عمر محمد',name:'عمر محمد سالم',displayName:'عمر الحلاق'}
+};
+defaultBarbers.forEach(b=>{let s=seedIdentity[b.id];if(s){b.name=s.name;b.displayName=s.displayName}});
+let stored=db.get('maw3idiBarbers',null);
+if(Array.isArray(stored)){
+stored=stored.map(b=>{let s=seedIdentity[b.id],name=s&&b.name===s.old?s.name:b.name;return {...b,name,displayName:b.displayName||(s?s.displayName:b.shop||b.name)}});
+db.set('maw3idiBarbers',stored);
+}
+function isTripleName(value){return value.trim().split(/\s+/).filter(Boolean).length>=3}
+function publicBarberName(b){return (b.displayName||b.shop||b.name).trim()}
+function searchMatches(value,query){let hay=String(value).toLowerCase(),q=String(query).trim().toLowerCase();if(!q)return true;let digits=q.replace(/\D/g,'');return hay.includes(q)||(digits.length>=3&&hay.replace(/\D/g,'').includes(digits))}
+
+let regName=$('#regName');
+regName.previousElementSibling.textContent='الاسم الثلاثي الرسمي';
+regName.placeholder='مثال: علي حسن عباس';
+regName.autocomplete='name';
+if(!$('#regDisplayName'))regName.insertAdjacentHTML('afterend','<label>الاسم المقترح للظهور أمام الزبائن</label><input id="regDisplayName" placeholder="مثال: علي الحلاق" maxlength="40"><small style="display:block;color:var(--muted);margin-top:5px;line-height:1.6">سيظهر هذا الاسم في نتائج البحث بدلاً من اسمك الرسمي.</small>');
+let mapSearch=$('#mapSearch');
+mapSearch.placeholder='ابحث بالاسم الثلاثي أو رقم الهاتف';
+let homeSearch=$('.luxe-search input');
+homeSearch.placeholder='ابحث بالاسم الثلاثي أو رقم الهاتف';
+homeSearch.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.currentTarget.value.trim()){show('discover');mapSearch.value=e.currentTarget.value;filterMap()}});
+homeSearch.addEventListener('change',e=>{if(e.currentTarget.value.trim()){show('discover');mapSearch.value=e.currentTarget.value;filterMap()}});
+$('#account .menu button:last-child .arrow').textContent='الإصدار 5.3';
+
+submitBarberRequest=function(){
+let request={name:$('#regName').value.trim(),displayName:$('#regDisplayName').value.trim(),shop:$('#regShop').value.trim(),phone:$('#regPhone').value.replace(/\D/g,''),area:$('#regArea').value.trim(),bio:$('#regBio').value.trim()};
+if(!request.name||!request.displayName||!request.shop||!request.phone||!request.area)return toast('أكمل الاسم الثلاثي واسم الظهور وبقية البيانات');
+if(!isTripleName(request.name))return toast('يرجى كتابة الاسم الثلاثي الرسمي، مثال: علي حسن عباس');
+if(request.phone.length<10)return toast('أدخل رقم هاتف صحيحاً لتسهيل البحث والتواصل');
+db.set('maw3idiBarberRequest',request);db.set('maw3idiBarberState','pending');updateBarberAccess();show('barberPending');toast('تم إرسال الطلب إلى صاحب التطبيق');
+};
+
+renderOwnerRequest=function(){
+let r=db.get('maw3idiBarberRequest',null),s=barberState();
+if(!r){$('#ownerRequest').innerHTML='<div class="card empty"><div class="big">✓</div><h3>لا توجد طلبات جديدة</h3><p>ستظهر طلبات تسجيل الحلاقين هنا.</p></div>';return}
+$('#ownerRequest').innerHTML=`<div class="card"><div class="row"><h3>${esc(r.shop)}</h3><span class="badge" style="background:${s==='approved'?'#e8f7ef':'#fff3d7'};color:${s==='approved'?'#208151':'#8a6518'}">${s==='approved'?'تمت الموافقة':'قيد المراجعة'}</span></div><p><b>الاسم الرسمي الثلاثي:</b> ${esc(r.name)}<br><b>الاسم المقترح للزبائن:</b> ${esc(r.displayName||r.shop)}<br><b>الهاتف:</b> ${esc(r.phone)}<br><b>المنطقة:</b> ${esc(r.area)}<br>${esc(r.bio||'لا توجد نبذة')}</p>${s==='pending'?'<button class="primary wide" onclick="approveBarber()">الموافقة وتفعيل الحساب</button>':''}</div>`;
+};
+
+approveBarber=function(){
+db.set('maw3idiBarberState','approved');db.set('maw3idiBarberNotice','تمت الموافقة على حسابك كحلاق. يمكنك الآن فتح لوحة الحلاق.');
+let r=db.get('maw3idiBarberRequest',null),a=getBarbers();
+if(r&&!a.some(x=>x.phone===r.phone)){a.push({id:'b'+Date.now(),name:r.name,displayName:r.displayName||r.shop,shop:r.shop,phone:r.phone,area:r.area,rating:0,reviews:0,visible:false,featured:false,approved:true,bio:r.bio||''});saveBarbers(a)}
+updateBarberAccess();renderOwnerRequest();renderOwnerBarbers();toast('تمت الموافقة وإضافة الحلاق إلى قائمة الإدارة');
+};
+
+const baseRenderOwnerBarbers=renderOwnerBarbers;
+renderOwnerBarbers=function(){
+baseRenderOwnerBarbers();
+let a=getBarbers(),manager=$('#barberManager');if(!manager)return;
+let section=manager.querySelector('.section');
+section.insertAdjacentHTML('afterend','<div class="search" style="margin-bottom:10px"><span>⌕</span><input id="ownerBarberSearch" placeholder="ابحث بالاسم الثلاثي أو رقم الهاتف" oninput="filterOwnerBarbers()"></div><p id="ownerSearchCount" style="color:var(--muted);font-size:9px;margin:0 3px 10px">'+a.length+' حساب في القائمة</p>');
+let manualName=$('#manualName');manualName.placeholder='الاسم الثلاثي الرسمي';
+manualName.insertAdjacentHTML('afterend','<input id="manualDisplayName" placeholder="الاسم المقترح للظهور أمام الزبائن" style="margin-top:7px">');
+$$('.owner-barber-list .admin-barber').forEach((row,i)=>{let b=a[i],display=publicBarberName(b);row.dataset.ownerSearch=[b.name,display,b.shop,b.phone,b.area].join(' ');row.querySelector('.row b').textContent=display;row.querySelector('.row small').textContent=b.shop+' • '+b.area;row.querySelector('.barber-details p').innerHTML=`الاسم الرسمي الثلاثي: ${esc(b.name)}<br>اسم الظهور للزبائن: ${esc(display)}<br>الصالون: ${esc(b.shop)}<br>الهاتف: ${esc(b.phone)}<br>المنطقة: ${esc(b.area)}<br>التقييم: ${b.rating} (${b.reviews} تقييم)<br>الحالة: ${b.approved?'معتمد':'غير معتمد'}<br>${esc(b.bio||'لا توجد نبذة')}`});
+};
+
+window.filterOwnerBarbers=function(){
+let q=$('#ownerBarberSearch').value,shown=0;
+$$('.owner-barber-list .admin-barber').forEach(row=>{let ok=searchMatches(row.dataset.ownerSearch,q);row.style.display=ok?'block':'none';if(ok)shown++});
+$('#ownerSearchCount').textContent=shown?shown+' نتيجة مطابقة':'لا يوجد حلاق مطابق للاسم أو الرقم';
+};
+
+saveManualBarber=function(){
+let data={name:$('#manualName').value.trim(),displayName:$('#manualDisplayName').value.trim(),shop:$('#manualShop').value.trim(),phone:$('#manualPhone').value.replace(/\D/g,''),area:$('#manualArea').value.trim(),rating:Math.min(5,Math.max(0,+$('#manualRating').value||0)),reviews:Math.max(0,+$('#manualReviews').value||0),bio:$('#manualBio').value.trim(),visible:$('#manualVisible').checked,featured:$('#manualFeatured').checked,approved:true};
+if(!data.name||!data.displayName||!data.shop||!data.phone||!data.area)return toast('أكمل الاسم الثلاثي واسم الظهور والصالون والهاتف والمنطقة');
+if(!isTripleName(data.name))return toast('اكتب الاسم الثلاثي الرسمي للحلاق');
+if(data.phone.length<10)return toast('أدخل رقم هاتف صحيحاً');
+let a=getBarbers();if(editingBarberId){let i=a.findIndex(x=>x.id===editingBarberId);if(i>=0)a[i]={...a[i],...data};editingBarberId=null}else a.push({id:'b'+Date.now(),...data});saveBarbers(a);renderOwnerBarbers();toast('تم حفظ بيانات الحلاق');
+};
+
+editBarberAdmin=function(id){
+let x=getBarbers().find(b=>b.id===id);if(!x)return;editingBarberId=id;$('#manualFormTitle').textContent='تعديل بيانات '+publicBarberName(x);$('#manualName').value=x.name;$('#manualDisplayName').value=publicBarberName(x);$('#manualShop').value=x.shop;$('#manualPhone').value=x.phone;$('#manualArea').value=x.area;$('#manualRating').value=x.rating;$('#manualReviews').value=x.reviews;$('#manualBio').value=x.bio||'';$('#manualVisible').checked=x.visible;$('#manualFeatured').checked=x.featured;$('.screen').scrollTop=0;toast('عدّل البيانات ثم اضغط حفظ الحلاق');
+};
+
+renderDirectory=function(){
+injectDirectory();let visible=getBarbers().filter(x=>x.visible&&x.approved),top=visible.filter(x=>x.featured).sort((a,b)=>b.rating-a.rating),regular=visible.filter(x=>!x.featured);
+let card=x=>{let display=publicBarberName(x),search=[x.name,display,x.shop,x.phone,x.area].join(' ');return `<article class="barber" data-search="${esc(search)}" data-shop="${esc(display)}" data-area="${esc(x.area)}" data-rating="${x.rating||'جديد'}" onclick="selectSalon(this.dataset.shop,this.dataset.area,this.dataset.rating)"><div class="avatar">${x.featured?'👑':'✂️'}</div><div class="grow"><b>${esc(display)} ${x.approved?'<span class="verified">✓</span>':''}</b><small>${esc(x.shop)} • <span class="rating">★ ${x.rating||'جديد'}</span> • ${esc(x.area)}</small></div><button class="primary">عرض</button></article>`};
+$('#topRatedList').innerHTML=top.map(card).join('')||'<div class="card"><p>لا يوجد حلاقون مميزون حالياً.</p></div>';$('#salonList').innerHTML=regular.map(card).join('')||'<div class="card"><p>لا توجد صالونات أخرى ظاهرة حالياً.</p></div>';$('#salonCount').textContent=regular.length+' صالون';$('.p1').style.display=top.some(x=>x.id==='ali')?'block':'none';$('.p2').style.display=top.some(x=>x.id==='mustafa')?'block':'none';let custom=db.get('maw3idiSalonLocation',null);if(custom)renderCustomSalon(custom);
+};
+
+filterMap=function(){let q=$('#mapSearch').value,shown=0;$$('#salonList .barber,#topRatedList .barber').forEach(x=>{let ok=searchMatches(x.dataset.search,q);x.style.display=ok?'flex':'none';if(ok)shown++});$('#salonCount').textContent=shown+' نتيجة'};
+hiddenOwnerTap=function(){ownerTapCount++;clearTimeout(ownerTapTimer);ownerTapTimer=setTimeout(()=>ownerTapCount=0,4500);if(ownerTapCount>=7){ownerTapCount=0;show('ownerLogin');toast('تم فتح بوابة المالك')}else if(ownerTapCount===1)toast('موعدي — الإصدار 5.3')};
+renderDirectory();
+})();
+</script>
+<style>
+.mini-ad{position:relative;display:flex;align-items:center;gap:10px;min-height:62px;margin:14px 0;padding:11px 12px;border:1px solid #dfd3ba;border-radius:16px;background:linear-gradient(135deg,#fffdf8,#f5efe2);color:var(--text);overflow:hidden}.mini-ad[hidden]{display:none}.mini-ad .ad-label{position:absolute;top:5px;left:7px;font-size:7px;letter-spacing:.5px;color:#88795e}.mini-ad .ad-mark{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#0d1b33;color:#d9ad5b;font-weight:800;font-size:10px;flex:0 0 auto}.mini-ad b,.mini-ad small{display:block}.mini-ad b{font-size:10px;margin-bottom:4px}.mini-ad small{font-size:8px;color:var(--muted);line-height:1.5}.revenue-grid{display:grid;gap:10px}.revenue-card{border:1px solid var(--line);border-radius:16px;padding:13px;background:#fff}.revenue-card.ad-ledger{border-top:3px solid #4c7bd9}.revenue-card.barber-ledger{border-top:3px solid #d9ad5b}.revenue-card.salon-ledger{border-top:3px solid #4c9b78}.revenue-card .ledger-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px}.revenue-card .ledger-head small{display:block;color:var(--muted);font-size:8px;margin-top:4px}.independent-tag{font-size:7px;padding:4px 6px;border-radius:8px;background:#eef2f8;color:#38506f;white-space:nowrap}.revenue-card .ledger-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}.revenue-card .ledger-stat{background:var(--surface);border-radius:11px;padding:9px}.revenue-card .ledger-stat b,.revenue-card .ledger-stat small{display:block}.revenue-card .ledger-stat b{font-size:12px}.revenue-card .ledger-stat small{font-size:7px;color:var(--muted);margin-top:4px}.revenue-note{font-size:8px;line-height:1.7;color:var(--muted);background:#f7f8fa;border-radius:10px;padding:8px;margin-top:8px}
+</style>
+<script>
+/* Maw3idi 5.3 — compact ads and independent revenue ledgers */
+(function(){
+function adUnit(id){return `<aside class="mini-ad" id="${id}" aria-label="مساحة إعلانية"><span class="ad-label">إعلان</span><div class="ad-mark">AD</div><div><b>مساحة إعلانية مميزة</b><small>إعلان صغير وواضح — جاهز للربط مع Google AdSense أو مزود آخر.</small></div></aside>`}
+if(!$('#customerAdHome'))$('.actions').insertAdjacentHTML('afterend',adUnit('customerAdHome'));
+if(!$('#customerAdDiscover'))$('#discover .map-card').insertAdjacentHTML('afterend',adUnit('customerAdDiscover'));
+function syncAdVisibility(){let enabled=db.get('maw3idiAds',true);$$('.mini-ad').forEach(x=>x.hidden=!enabled);let ownerToggle=$('#revenueAdsEnabled');if(ownerToggle)ownerToggle.checked=enabled}
+const oldToggleAds=toggleAds;
+toggleAds=function(){oldToggleAds();syncAdVisibility()};
+
+function ledgerData(type){let key=type==='ads'?'maw3idiRevenueAds':type==='barbers'?'maw3idiRevenueBarbers':'maw3idiRevenueSalons';return db.get(key,{month:0,active:0,views:0,clicks:0})}
+function amount(value){return Number(value||0).toLocaleString('en-US')+' د.ع'}
+window.saveRevenueLedger=function(type){
+let prefix=type==='barbers'?'barberLedger':'salonLedger',month=Math.max(0,+$('#'+prefix+'Month').value||0),active=Math.max(0,+$('#'+prefix+'Active').value||0),key=type==='barbers'?'maw3idiRevenueBarbers':'maw3idiRevenueSalons';
+db.set(key,{month,active});renderOwnerRevenue();toast(type==='barbers'?'تم حفظ حساب اشتراكات الحلاقين بشكل مستقل':'تم حفظ حساب اشتراكات الصالونات بشكل مستقل');
+};
+window.saveAdSettings=function(){
+let provider=$('#adProvider').value,publisherId=$('#adPublisherId').value.trim(),enabled=$('#revenueAdsEnabled').checked;db.set('maw3idiAdSettings',{provider,publisherId});db.set('maw3idiAds',enabled);$('#ads')?.classList.toggle('on',enabled);syncAdVisibility();toast('تم حفظ إعدادات واجهة الإعلانات');
+};
+window.renderOwnerRevenue=function(){
+let root=$('#ownerRequest'),manager=$('#barberManager');if(!root||!manager)return;$('#ownerRevenue')?.remove();
+let ad=ledgerData('ads'),barbers=ledgerData('barbers'),salons=ledgerData('salons'),settings=db.get('maw3idiAdSettings',{provider:'google',publisherId:''});
+manager.insertAdjacentHTML('afterend',`<section id="ownerRevenue"><div class="section"><h3>الأرباح والاشتراكات</h3><span>3 حسابات مستقلة</span></div><div class="revenue-grid">
+<div class="revenue-card ad-ledger"><div class="ledger-head"><div><b>أرباح الإعلانات</b><small>حساب مستقل عن الاشتراكات</small></div><span class="independent-tag">مستقل</span></div><div class="ledger-stats"><div class="ledger-stat"><b>${amount(ad.month)}</b><small>أرباح هذا الشهر</small></div><div class="ledger-stat"><b>${ad.views||0}</b><small>مرات الظهور المسجلة</small></div></div><label>مزود الإعلانات</label><select id="adProvider"><option value="google" ${settings.provider==='google'?'selected':''}>Google AdSense</option><option value="other" ${settings.provider==='other'?'selected':''}>مزود إعلانات آخر</option></select><input id="adPublisherId" placeholder="معرّف الناشر عند توفره" value="${esc(settings.publisherId||'')}" style="margin-top:7px"><label class="save-card" style="margin-top:7px"><input id="revenueAdsEnabled" type="checkbox" ${db.get('maw3idiAds',true)?'checked':''}> إظهار الإعلان الصغير للزبائن</label><button class="primary wide" onclick="saveAdSettings()">حفظ إعدادات الإعلانات</button><div class="revenue-note">الأرقام تبقى صفراً إلى أن يتم ربط حساب إعلانات مقبول ومصدر بيانات حقيقي. لن تُخلط أرباح الإعلانات مع أي اشتراك.</div></div>
+<div class="revenue-card barber-ledger"><div class="ledger-head"><div><b>اشتراكات الحلاقين</b><small>دفتر مستقل للحسابات الفردية</small></div><span class="independent-tag">مستقل</span></div><div class="ledger-stats"><div class="ledger-stat"><b>${amount(barbers.month)}</b><small>دخل هذا الشهر</small></div><div class="ledger-stat"><b>${barbers.active||0}</b><small>اشتراك حلاق فعّال</small></div></div><input id="barberLedgerMonth" type="number" min="0" step="1000" value="${barbers.month||0}" placeholder="دخل الشهر"><input id="barberLedgerActive" type="number" min="0" value="${barbers.active||0}" placeholder="الاشتراكات الفعالة" style="margin-top:7px"><button class="primary wide" onclick="saveRevenueLedger('barbers')">حفظ حساب الحلاقين</button></div>
+<div class="revenue-card salon-ledger"><div class="ledger-head"><div><b>اشتراكات الصالونات</b><small>دفتر مستقل لحسابات الصالونات</small></div><span class="independent-tag">مستقل</span></div><div class="ledger-stats"><div class="ledger-stat"><b>${amount(salons.month)}</b><small>دخل هذا الشهر</small></div><div class="ledger-stat"><b>${salons.active||0}</b><small>اشتراك صالون فعّال</small></div></div><input id="salonLedgerMonth" type="number" min="0" step="1000" value="${salons.month||0}" placeholder="دخل الشهر"><input id="salonLedgerActive" type="number" min="0" value="${salons.active||0}" placeholder="الاشتراكات الفعالة" style="margin-top:7px"><button class="primary wide" onclick="saveRevenueLedger('salons')">حفظ حساب الصالونات</button></div>
+</div></section>`);
+};
+const ownerBarbersWithRevenue=renderOwnerBarbers;
+renderOwnerBarbers=function(){ownerBarbersWithRevenue();renderOwnerRevenue()};
+syncAdVisibility();
+})();
+</script>
+</body></html>
