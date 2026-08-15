@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>حلاقي — موعد حلاقتي | V6.2</title>
+<style>
+:root{
+ --bg:#f4f2ed;--surface:#ffffff;--surface2:#f8f7f3;--text:#171a21;--muted:#747985;--line:#e7e3dc;
+ --navy:#111c31;--navy2:#1b2b49;--gold:#c29a55;--gold2:#efd9ad;--green:#23a875;--orange:#e29536;--red:#d85656;
+ --shadow:0 18px 55px rgba(20,26,40,.09);--radius:20px;
+}
+body.dark{
+ --bg:#0d1016;--surface:#151920;--surface2:#10141a;--text:#f5f5f2;--muted:#9ba1ab;--line:#282e38;
+ --navy:#101827;--navy2:#18243b;--gold:#d0a55e;--gold2:#f0d8ac;--shadow:0 18px 60px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Tahoma,Arial,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.app{max-width:480px;min-height:100dvh;margin:auto;background:var(--bg);padding-bottom:90px;position:relative;overflow:hidden}
+.desktopNote{display:none}
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top)) 15px 11px;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(22px);border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
+.brand{display:flex;align-items:center;gap:10px}.brandMark{width:43px;height:43px;border-radius:14px;background:linear-gradient(145deg,var(--navy2),#0c1220);display:grid;place-items:center;box-shadow:var(--shadow);border:1px solid rgba(194,154,85,.36)}
+.brandMark svg{width:27px;height:27px}.brand b{display:block;font-size:17px}.brand small{display:block;color:var(--muted);font-size:9px;margin-top:2px}
+.topActions{display:flex;gap:7px}.iconBtn{width:39px;height:39px;border:1px solid var(--line);border-radius:13px;background:var(--surface);color:var(--text);display:grid;place-items:center}
+.screen{display:none;padding:15px}.screen.active{display:block}.hero{background:radial-gradient(circle at 15% 5%,rgba(194,154,85,.23),transparent 28%),linear-gradient(145deg,var(--navy2),var(--navy));color:#fff;border-radius:27px;padding:23px 19px;box-shadow:var(--shadow);overflow:hidden;position:relative}
+.hero:after{content:"";position:absolute;width:190px;height:190px;border-radius:50%;border:1px solid rgba(239,217,173,.17);left:-85px;bottom:-105px;box-shadow:0 0 0 26px rgba(239,217,173,.03),0 0 0 52px rgba(239,217,173,.02)}
+.hero .eyebrow{font-size:10px;color:var(--gold2);font-weight:800}.hero h1{font-size:31px;line-height:1.23;margin:8px 0 8px;letter-spacing:-.6px}.hero p{font-size:11px;line-height:1.7;color:#d8dde8;margin:0;max-width:330px}.hero .primary{margin-top:15px}
+.primary,.secondary,.dangerBtn,.goldBtn{border:0;border-radius:14px;padding:12px 15px;font-weight:850;font-size:12px}
+.primary,.goldBtn{background:linear-gradient(145deg,var(--gold2),var(--gold));color:#17130c}.secondary{background:var(--surface);color:var(--text);border:1px solid var(--line)}.dangerBtn{background:#3a1719;color:#ffb7b7;border:1px solid #6a2c31}
+.sectionTitle{display:flex;align-items:end;justify-content:space-between;gap:10px;margin:22px 2px 10px}.sectionTitle h2{font-size:18px;margin:0}.sectionTitle h3{font-size:15px;margin:0}.sectionTitle small{color:var(--muted);font-size:10px}.textBtn{border:0;background:none;color:var(--gold);font-size:10px;font-weight:850}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}.card h3{margin:0 0 5px;font-size:14px}.card p{margin:0;color:var(--muted);font-size:10px;line-height:1.65}
+.quick{padding:13px}.quick span{display:grid;width:36px;height:36px;border-radius:11px;background:color-mix(in srgb,var(--gold) 15%,var(--surface));place-items:center;margin-bottom:10px}.quick b{font-size:12px}.quick small{display:block;color:var(--muted);font-size:9px;margin-top:4px;line-height:1.5}
+.locationBox{margin-top:11px;display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:11px}.locationBox b{font-size:11px}.locationBox small{display:block;color:var(--muted);font-size:9px;margin-top:3px}
+.statusDot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-left:5px}.green{background:var(--green)}.orange{background:var(--orange)}.gray{background:#858b95}
+.barberList{display:grid;gap:9px}.barberCard{display:grid;grid-template-columns:58px 1fr auto;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:10px}.avatar{width:58px;height:58px;border-radius:16px;object-fit:cover;background:linear-gradient(145deg,#c9b493,#796344);display:grid;place-items:center;font-size:27px}.barberCard h3{margin:0;font-size:12px}.barberCard p{margin:4px 0;color:var(--muted);font-size:9px}.rating{font-size:9px;color:var(--gold);font-weight:850}.badge{display:inline-flex;padding:5px 7px;border-radius:999px;font-size:8px;font-weight:850;background:color-mix(in srgb,var(--green) 15%,var(--surface));color:var(--green)}.badge.sponsored{background:color-mix(in srgb,var(--gold) 18%,var(--surface));color:var(--gold)}
+.feed{display:grid;gap:12px}.post{background:var(--surface);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:var(--shadow)}.postHead{display:flex;align-items:center;gap:9px;padding:11px}.postHead .avatar{width:39px;height:39px;border-radius:12px;font-size:19px}.postHead b{font-size:11px}.postHead small{display:block;color:var(--muted);font-size:8px;margin-top:2px}.postImage{width:100%;aspect-ratio:1/1;object-fit:cover;background:#252a31}.postBody{padding:12px}.postBody p{font-size:10px;color:var(--muted);line-height:1.65;margin:5px 0 10px}.reactRow{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:7px}.reactRow button{border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:11px;padding:8px 5px;font-size:9px;font-weight:800}
+.catalogFilters{display:flex;gap:7px;overflow:auto;padding-bottom:5px}.chip{white-space:nowrap;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:8px 10px;font-size:9px}.chip.active{border-color:var(--gold);color:var(--gold);background:color-mix(in srgb,var(--gold) 10%,var(--surface))}
+.catalog{display:grid;grid-template-columns:1fr 1fr;gap:9px}.styleCard{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}.styleCard img{width:100%;height:145px;object-fit:cover;display:block;background:#252a31}.styleCard .body{padding:10px}.styleCard b{font-size:11px}.styleCard small{display:block;color:var(--muted);font-size:8px;margin-top:3px}.styleCard button{width:100%;margin-top:8px}
+.formCard{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-bottom:10px}.formCard h3{margin:0 0 5px;font-size:14px}.formCard>p{margin:0 0 12px;color:var(--muted);font-size:9px;line-height:1.7}
+label{display:block;font-size:10px;color:var(--muted);font-weight:750;margin:12px 2px 6px}.input,select,textarea{width:100%;border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:13px;min-height:44px;padding:10px 11px;outline:none}textarea{min-height:84px;resize:vertical}.inline{display:grid;grid-template-columns:1fr 1fr;gap:8px}.serviceGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.serviceChoice{border:1px solid var(--line);background:var(--surface2);border-radius:13px;padding:11px;font-size:9px;color:var(--text);text-align:right}.serviceChoice.active{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 12%,var(--surface))}
+.notice{border:1px solid #e1b76d;background:color-mix(in srgb,#e8b45e 14%,var(--surface));border-radius:14px;padding:10px;font-size:9px;line-height:1.65;color:var(--text);margin-top:9px}
+.map{height:260px;border-radius:22px;border:1px solid var(--line);background:linear-gradient(145deg,color-mix(in srgb,var(--surface) 90%,#c8d5bf),color-mix(in srgb,var(--surface2) 88%,#a9bea4));position:relative;overflow:hidden}.road{position:absolute;background:color-mix(in srgb,var(--text) 8%,transparent);border-radius:999px}.road.r1{width:390px;height:13px;transform:rotate(22deg);top:90px;left:-60px}.road.r2{width:330px;height:10px;transform:rotate(-45deg);top:130px;left:40px}.road.r3{width:260px;height:8px;top:205px;left:-10px}.mapPin{position:absolute;width:43px;height:43px;border-radius:15px;border:3px solid var(--surface);box-shadow:0 8px 20px rgba(0,0,0,.15);display:grid;place-items:center;background:var(--navy);color:#fff}.mapPin .miniStatus{position:absolute;width:11px;height:11px;border:2px solid var(--surface);border-radius:50%;right:-1px;bottom:-1px}.pin1{top:45px;right:80px}.pin2{top:140px;left:72px}.pin3{bottom:27px;right:145px}.myLoc{position:absolute;top:112px;right:205px;width:16px;height:16px;border-radius:50%;background:#387cf2;border:4px solid rgba(255,255,255,.9);box-shadow:0 0 0 8px rgba(56,124,242,.16)}
+.statGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;text-align:center}.stat b{display:block;color:var(--gold);font-size:18px}.stat small{font-size:8px;color:var(--muted)}
+details.adminDrop{background:var(--surface);border:1px solid var(--line);border-radius:18px;margin-bottom:10px;overflow:hidden}details.adminDrop summary{padding:14px;list-style:none;font-weight:850;font-size:12px;display:flex;align-items:center;justify-content:space-between}details.adminDrop summary::-webkit-details-marker{display:none}.detailsBody{border-top:1px solid var(--line);padding:13px}
+.switchRow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.switchRow:last-child{border:0}.switchRow b{font-size:10px}.switchRow small{display:block;color:var(--muted);font-size:8px;margin-top:3px}.switch{width:49px;height:28px;border-radius:999px;background:#bbb;position:relative;flex:none}.switch:after{content:"";width:22px;height:22px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:.2s}.switch.on{background:var(--green)}.switch.on:after{left:24px}
+.scheduleDay{display:grid;grid-template-columns:70px 1fr 1fr;gap:7px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)}.scheduleDay input[type=checkbox]{width:16px;height:16px}.scheduleDay label{margin:0;font-size:9px;display:flex;gap:5px;align-items:center}.scheduleDay input[type=time]{min-height:38px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);color:var(--text);padding:5px}
+.teamMember,.loginRow,.analyticsRow{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:10px 0}.teamMember:last-child,.loginRow:last-child,.analyticsRow:last-child{border:0}.teamMember b,.loginRow b,.analyticsRow b{font-size:10px}.teamMember small,.loginRow small,.analyticsRow small{display:block;color:var(--muted);font-size:8px;margin-top:3px}
+.mediaPreview{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.mediaPreview img{width:100%;height:90px;object-fit:cover;border-radius:12px;background:#222}
+.socialLinks{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.socialLink{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:8px 11px;font-size:9px;text-decoration:none}
+.footerDev{text-align:center;color:var(--muted);font-size:8px;padding:26px 10px 5px;letter-spacing:.4px}.footerDev b{color:var(--gold)}
+.bottomNav{position:fixed;z-index:40;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);display:grid;grid-template-columns:repeat(4,1fr);padding:7px 7px calc(8px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--surface) 93%,transparent);backdrop-filter:blur(22px);border-top:1px solid var(--line)}.navBtn{border:0;background:none;color:var(--muted);border-radius:12px;min-height:55px;font-size:8px;font-weight:800}.navBtn span{display:block;font-size:19px;margin-bottom:2px}.navBtn.active{color:var(--gold);background:color-mix(in srgb,var(--gold) 9%,var(--surface))}
+.modal{position:fixed;z-index:100;inset:0;background:rgba(3,5,8,.68);backdrop-filter:blur(8px);display:none;align-items:flex-end}.modal.show{display:flex}.modalCard{width:min(480px,100%);max-height:92dvh;overflow:auto;margin:auto;background:var(--surface);border:1px solid var(--line);border-radius:27px 27px 0 0;padding:16px 15px calc(20px + env(safe-area-inset-bottom))}.grab{width:44px;height:5px;border-radius:999px;background:var(--line);margin:0 auto 14px}.modalHead{display:flex;align-items:center;justify-content:space-between;gap:10px}.modalHead h2{font-size:18px;margin:0}.close{width:38px;height:38px;border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:12px}.roleCards{display:grid;gap:8px;margin-top:13px}.roleCard{border:1px solid var(--line);background:var(--surface2);border-radius:16px;padding:13px;text-align:right;color:var(--text)}.roleCard b{display:block;font-size:12px}.roleCard small{display:block;color:var(--muted);font-size:9px;margin-top:4px}
+.comment{border-bottom:1px solid var(--line);padding:9px 0}.comment b{font-size:9px}.comment p{font-size:9px;color:var(--muted);margin:4px 0}.comment small{font-size:7px;color:var(--muted)}
+.toast{position:fixed;z-index:150;left:50%;bottom:88px;transform:translateX(-50%) translateY(15px);width:min(440px,calc(100% - 24px));background:var(--navy);color:#fff;padding:12px;border-radius:14px;text-align:center;font-size:10px;font-weight:800;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.hidden{display:none!important}
+.barberActions{display:grid;gap:5px;min-width:68px}.barberActions button{padding:8px 7px;font-size:8px}
+.notificationCard{display:flex;gap:10px;align-items:flex-start;border-bottom:1px solid var(--line);padding:11px 0}.notificationCard:last-child{border:0}.notificationIcon{width:36px;height:36px;border-radius:12px;background:color-mix(in srgb,var(--gold) 15%,var(--surface));display:grid;place-items:center;flex:none}.notificationCard b{font-size:10px}.notificationCard p{font-size:9px;color:var(--muted);line-height:1.6;margin:4px 0}.notificationCard small{font-size:7px;color:var(--muted)}.unread{position:relative}.unread:after{content:"";position:absolute;top:8px;left:8px;width:7px;height:7px;border-radius:50%;background:var(--red)}
+.chatLayout{display:grid;gap:10px}.chatInbox{display:grid;gap:7px}.chatThreadBtn{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:15px;padding:10px;text-align:right;color:var(--text);display:flex;align-items:center;gap:9px}.chatThreadBtn.active{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 8%,var(--surface))}.chatThreadBtn .avatar{width:42px;height:42px;border-radius:12px;font-size:18px}.chatThreadBtn b{font-size:10px}.chatThreadBtn small{display:block;color:var(--muted);font-size:8px;margin-top:3px}.chatBox{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden}.chatHeader{padding:12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:9px}.chatHeader b{font-size:11px}.chatHeader small{display:block;color:var(--muted);font-size:8px;margin-top:2px}.messages{height:330px;overflow:auto;padding:12px;background:var(--surface2);display:flex;flex-direction:column;gap:7px}.msg{max-width:82%;border-radius:15px;padding:9px 10px;font-size:9px;line-height:1.6}.msg.me{align-self:flex-start;background:var(--navy);color:white;border-bottom-left-radius:5px}.msg.them{align-self:flex-end;background:var(--surface);border:1px solid var(--line);border-bottom-right-radius:5px}.msg time{display:block;font-size:7px;opacity:.65;margin-top:3px}.chatComposer{display:grid;grid-template-columns:1fr auto;gap:7px;padding:9px;border-top:1px solid var(--line)}.chatComposer input{min-height:42px}
+.transferBox{border:1px solid color-mix(in srgb,var(--gold) 40%,var(--line));background:color-mix(in srgb,var(--gold) 7%,var(--surface));border-radius:15px;padding:11px}.transferBox b{font-size:10px}.transferBox p{font-size:9px;color:var(--muted);line-height:1.6;margin:5px 0 0}
+@media(min-width:760px){
+ body{background:linear-gradient(145deg,#dce3ed,#eee7dc);padding:24px}.dark{background:#090c12}
+ .app{border:9px solid #1a1e26;border-radius:52px;height:860px;min-height:auto;overflow:auto;box-shadow:0 35px 100px rgba(16,24,40,.25)}.app::-webkit-scrollbar{display:none}
+ .bottomNav{position:sticky;left:auto;transform:none;margin-top:-81px}.desktopNote{display:block;position:fixed;right:35px;top:40px;width:240px;color:#69717e;font-size:11px;line-height:1.8}
+}
+</style>
+
+<style id="premium-v62-theme">
+:root{
+ --bg:#f7f4ee!important;
+ --surface:#fffdf9!important;
+ --surface2:#f3efe7!important;
+ --text:#0f1b2d!important;
+ --muted:#7a7f87!important;
+ --line:#e8e0d4!important;
+ --navy:#0d2138!important;
+ --navy2:#142f4e!important;
+ --gold:#c99a42!important;
+ --gold2:#e8c879!important;
+ --green:#2ca56f!important;
+ --orange:#d9953f!important;
+ --red:#d85b5b!important;
+ --shadow:0 14px 35px rgba(34,41,54,.08)!important;
+}
+body.dark{
+ --bg:#08111c!important;
+ --surface:#0d1a2a!important;
+ --surface2:#122236!important;
+ --text:#f7f3ea!important;
+ --muted:#a4acb6!important;
+ --line:#23364c!important;
+ --navy:#07131f!important;
+ --navy2:#102840!important;
+ --gold:#d6a64f!important;
+ --gold2:#efd18e!important;
+ --shadow:0 16px 38px rgba(0,0,0,.30)!important;
+}
+body{background:var(--bg)!important}
+.app{background:var(--bg)!important}
+.topbar{
+ background:color-mix(in srgb,var(--surface) 94%,transparent)!important;
+ border-bottom:1px solid var(--line)!important;
+ padding-bottom:10px!important;
+}
+.brandMark{
+ background:var(--surface)!important;
+ border:1px solid color-mix(in srgb,var(--gold) 65%,var(--line))!important;
+ box-shadow:0 6px 16px rgba(0,0,0,.06)!important;
+}
+.brandMark svg path,.brandMark svg circle{stroke:var(--navy)!important}
+.brandMark svg path:last-child{stroke:var(--gold)!important}
+.iconBtn{
+ background:var(--surface)!important;color:var(--navy)!important;
+ border:1px solid var(--line)!important;
+ box-shadow:0 4px 12px rgba(0,0,0,.04)!important;
+}
+.hero{
+ background:linear-gradient(145deg,#0d2138,#173a5b)!important;
+ border-radius:24px!important;
+ box-shadow:0 16px 34px rgba(13,33,56,.18)!important;
+}
+body.dark .hero{background:linear-gradient(145deg,#0b1a2a,#102b47)!important}
+.hero .eyebrow{color:var(--gold2)!important}
+.primary,.goldBtn{
+ background:linear-gradient(180deg,#ddb565,#c99537)!important;
+ color:#132034!important;
+ border:1px solid rgba(128,89,20,.12)!important;
+ box-shadow:0 6px 14px rgba(201,154,66,.22)!important;
+}
+.secondary{
+ background:var(--surface)!important;
+ color:var(--navy)!important;
+ border:1px solid var(--line)!important;
+}
+.card,.formCard,.barberCard,.post,.styleCard,.stat,.chatBox,.chatThreadBtn,details.adminDrop{
+ border-radius:18px!important;
+ background:var(--surface)!important;
+ border:1px solid var(--line)!important;
+ box-shadow:none!important;
+}
+.quick{
+ min-height:102px!important;
+ display:flex!important;
+ flex-direction:column!important;
+ justify-content:center!important;
+ align-items:flex-start!important;
+}
+.quick span{
+ background:transparent!important;
+ border:1px solid color-mix(in srgb,var(--gold) 55%,var(--line))!important;
+ color:var(--navy)!important;
+ width:40px!important;height:40px!important;border-radius:13px!important;
+ font-size:18px!important;
+}
+.sectionTitle h2{font-size:19px!important;color:var(--navy)!important}
+.sectionTitle h3{color:var(--navy)!important}
+.barberCard{grid-template-columns:60px 1fr auto!important;padding:11px!important}
+.barberCard .avatar{border:1px solid var(--line)!important}
+.badge{border:1px solid color-mix(in srgb,var(--green) 28%,var(--line))!important}
+.badge.sponsored{border-color:color-mix(in srgb,var(--gold) 38%,var(--line))!important}
+.serviceChoice{
+ min-height:54px!important;
+ border-radius:14px!important;
+ font-size:10px!important;
+ border:1px solid var(--line)!important;
+}
+.serviceChoice.active{
+ background:color-mix(in srgb,var(--gold) 12%,var(--surface))!important;
+ border-color:var(--gold)!important;
+ color:var(--navy)!important;
+}
+.chip{padding:9px 13px!important;border-radius:999px!important}
+.chip.active{background:var(--navy)!important;color:white!important;border-color:var(--navy)!important}
+.input,select,textarea,input{
+ border-radius:13px!important;background:var(--surface)!important;border:1px solid var(--line)!important;color:var(--text)!important
+}
+.bottomNav{
+ background:color-mix(in srgb,var(--surface) 96%,transparent)!important;
+ border-top:1px solid var(--line)!important;
+ box-shadow:0 -8px 24px rgba(0,0,0,.04)!important;
+}
+.navBtn{font-size:9px!important;color:var(--muted)!important}
+.navBtn span{font-size:18px!important}
+.navBtn.active{color:var(--gold)!important;background:transparent!important}
+.statusDot{box-shadow:0 0 0 2px var(--surface)}
+.postHead{padding:12px!important}
+.postBody{padding:13px!important}
+.reactRow button{background:var(--surface)!important;border:1px solid var(--line)!important}
+.map{background:#e9ece5!important}
+body.dark .map{background:#152332!important}
+.notice{border-radius:14px!important}
+.stat b{font-size:20px!important}
+.dashboard-kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpi-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;text-align:center}
+.kpi-card b{display:block;font-size:19px;color:var(--navy)}
+.kpi-card small{font-size:8px;color:var(--muted)}
+.feature-strip{display:flex;gap:8px;overflow:auto;padding-bottom:2px}
+.feature-pill{white-space:nowrap;border:1px solid var(--line);background:var(--surface);color:var(--navy);border-radius:999px;padding:9px 12px;font-size:9px;font-weight:800}
+.mode-toggle-fixed{
+ position:fixed;z-index:99;bottom:88px;left:max(12px,calc(50% - 228px));
+ width:44px;height:44px;border-radius:50%;border:1px solid var(--line);
+ background:var(--surface);color:var(--navy);box-shadow:0 8px 22px rgba(0,0,0,.12);
+}
+@media(min-width:760px){.mode-toggle-fixed{left:calc(50% - 224px)}}
+</style>
+
+</head>
+<body>
+<div class="desktopNote">حلاقي V6.2 — Premium UI<br>على الكمبيوتر تظهر داخل إطار هاتف، وعلى الآيفون تملأ الشاشة تلقائياً.</div>
+<main class="app" id="app">
+<header class="topbar">
+ <div class="brand">
+  <div class="brandMark">
+   <svg viewBox="0 0 64 64" fill="none"><path d="M18 13c7 7 12 15 14 24M46 13c-7 7-12 15-14 24" stroke="#efd9ad" stroke-width="5" stroke-linecap="round"/><circle cx="17" cy="13" r="7" stroke="#efd9ad" stroke-width="4"/><circle cx="47" cy="13" r="7" stroke="#efd9ad" stroke-width="4"/><path d="M32 37 22 53M32 37l10 16" stroke="#c29a55" stroke-width="5" stroke-linecap="round"/></svg>
+  </div>
+  <div><b id="brandTitle">حلاقي</b><small id="brandSub">موعد حلاقتي</small></div>
+ </div>
+ <div class="topActions">
+  <button class="iconBtn" id="backBtn" title="رجوع">↩</button>
+  <button class="iconBtn" id="roleBtn" title="تبديل الحساب">👤</button>
+ </div>
+</header>
+
+<!-- CUSTOMER HOME -->
+<section class="screen active" id="customerHome">
+ <div class="hero">
+  <span class="eyebrow">حلاقي — العراق</span>
+  <h1 data-i18n="heroTitle">حلاقتك،<br>بأسلوبك.</h1>
+  <p data-i18n="heroText">احجز بسهولة مع حلاق موثوق قريب منك، أو استكشف القصات والخدمات أولاً.</p>
+  <div style="display:grid;grid-template-columns:1.15fr .85fr;gap:8px;margin-top:15px">
+   <button class="primary" onclick="openBooking(true)" data-i18n="bookExperience">احجز الآن</button>
+   <button class="secondary" onclick="showScreen('explore')">استكشف</button>
+  </div>
+ </div>
+ <div class="locationBox"><div><b>📍 <span id="locationName">تحديد موقعك...</span></b><small id="locationCoords">سيتم الاعتماد على موقعك الحالي تلقائياً</small></div><button class="textBtn" onclick="detectLocation()">تحديث</button></div>
+ <div class="grid2" style="margin-top:10px">
+  <button class="card quick" onclick="showScreen('explore')"><span>◉</span><b data-i18n="explore">استكشف</b><small>أعمال الحلاقين والصالونات</small></button>
+  <button class="card quick" onclick="showScreen('catalog')"><span>✂</span><b>كتالوك الحلاقة</b><small>لكل الأعمار وأنواع الشعر</small></button>
+ </div>
+ <div class="grid2" style="margin-top:10px">
+  <button class="card quick" onclick="openChats()"><span>💬</span><b>الرسائل</b><small>تواصل مباشرة مع حلاقك</small></button>
+  <button class="card quick" id="notificationsQuick" onclick="openNotifications()"><span>🔔</span><b>الإشعارات</b><small id="notificationQuickText">لا توجد إشعارات جديدة</small></button>
+ </div>
+ <div id="customerNotificationsPreview"></div>
+ <div class="feature-strip" style="margin-top:12px">
+  <button class="feature-pill" onclick="showScreen('mapScreen')">📍 الأقرب</button>
+  <button class="feature-pill" onclick="showScreen('explore')">★ الأعلى تقييماً</button>
+  <button class="feature-pill" onclick="openBooking(true)">● المتاح الآن</button>
+ </div>
+ <div class="sectionTitle"><div><h2>متاحون الآن</h2><small>حلاقون وصالونات يعملون حالياً</small></div><button class="textBtn" onclick="showScreen('mapScreen')">الخريطة</button></div>
+ <div class="barberList" id="onlineBarbers"></div>
+ <div class="sectionTitle"><div><h3>الأعلى تقييماً</h3><small>يظهرون هنا مجاناً</small></div></div>
+ <div class="barberList" id="topRated"></div>
+ <div id="socialHome"></div>
+ <div class="footerDev">Developed by <b>Hussein Al-Jawzi</b></div>
+</section>
+
+<!-- EXPLORE -->
+<section class="screen" id="explore">
+ <div class="sectionTitle" style="margin-top:2px"><div><h2>استكشف</h2><small>مجتمع الحلاقين والزبائن</small></div></div>
+ <div class="catalogFilters">
+  <button class="chip active" onclick="setFeedFilter('all',this)">الكل</button><button class="chip" onclick="setFeedFilter('barber',this)">حلاقين</button><button class="chip" onclick="setFeedFilter('salon',this)">صالونات</button><button class="chip" onclick="setFeedFilter('popular',this)">الأكثر تفاعلاً</button>
+ </div>
+ <div class="feed" id="feed" style="margin-top:10px"></div>
+</section>
+
+<!-- CATALOG -->
+<section class="screen" id="catalog">
+ <div class="sectionTitle" style="margin-top:2px"><div><h2>الكتالوج</h2><small>اختر بسهولة حسب الطول أو نوع الشعر</small></div></div>
+ <div class="formCard">
+  <div class="inline"><div><label>الفئة</label><select id="catAge" onchange="renderCatalog()"><option value="all">الكل</option><option value="adult">بالغ</option><option value="kid">أطفال</option></select></div>
+  <div><label>طول الشعر</label><select id="catLength" onchange="renderCatalog()"><option value="all">الكل</option><option value="short">قصير</option><option value="medium">متوسط</option><option value="long">طويل</option></select></div></div>
+  <label>نوع الشعر</label><div class="serviceGrid"><button class="serviceChoice texture active" data-value="all" onclick="setTexture('all',this)">الكل</button><button class="serviceChoice texture" data-value="natural" onclick="setTexture('natural',this)">طبيعي</button><button class="serviceChoice texture" data-value="curly" onclick="setTexture('curly',this)">كيرلي</button><button class="serviceChoice texture" data-value="wavy" onclick="setTexture('wavy',this)">ويفي</button></div>
+ </div>
+ <div class="catalog" id="catalogGrid"></div>
+</section>
+
+<!-- BOOKING -->
+<section class="screen" id="booking">
+ <div class="sectionTitle" style="margin-top:2px"><div><h2>الحجز</h2><small>بسيط إذا تحب، ومفصل إذا تحتاج</small></div></div>
+ <div class="formCard">
+  <div class="switchRow"><div><b>حجز سريع بدون تفاصيل الستايل</b><small>اختر الحلاق والخدمة والوقت فقط</small></div><div class="switch" id="simpleBookingSwitch" onclick="toggleSimpleBooking()"></div></div>
+  <label>الحلاق / الصالون المتاح</label><select id="bookingBarber" onchange="updateBookingInfo()"></select>
+  <label>اختر الخدمات <small style='color:var(--muted)'>(يمكنك اختيار أكثر من خدمة)</small></label><div class="serviceGrid" id="serviceChoices"></div>
+  <div id="detailedStyleFields">
+   <div class="inline"><div><label>طول الشعر</label><select id="bookHairLength"><option>قصير</option><option>متوسط</option><option>طويل</option></select></div><div><label>نوع الشعر</label><select id="bookTexture"><option>طبيعي</option><option>كيرلي</option><option>ويفي</option></select></div></div>
+   <label>القصة المختارة</label><input class="input" id="selectedStyleInput" placeholder="يمكن اختيارها من الكتالوك">
+   <label>طول اللحية</label><select id="bookBeard"><option>لا توجد</option><option>قصيرة</option><option>متوسطة</option><option>طويلة</option></select>
+  </div>
+  <div id="eventInfo" class="notice hidden"></div>
+  <div id="homeServiceFields" class="hidden"><label>عدد الأشخاص للحلاقة في المنزل</label><input class="input" id="homePeople" type="number" min="1" max="10" value="1" oninput="calculateBooking()"></div>
+  <div class="inline"><div><label>اليوم</label><select id="bookingDay"></select></div><div><label>الوقت</label><select id="bookingTime"></select></div></div>
+  <div class="notice" id="priceSummary">اختر الخدمات لعرض السعر التقريبي.</div>
+  <button class="primary" style="width:100%;margin-top:11px" onclick="confirmBooking()">تأكيد الحجز</button>
+  <button class="secondary" style="width:100%;margin-top:7px" onclick="sendBookingWhatsApp()">إرسال النموذج عبر واتساب</button>
+ </div>
+</section>
+
+<!-- MAP -->
+<section class="screen" id="mapScreen">
+ <div class="sectionTitle" style="margin-top:2px"><div><h2>الأقرب والمتاح الآن</h2><small>الأخضر متاح • البرتقالي مشغول</small></div></div>
+ <div class="map">
+  <span class="road r1"></span><span class="road r2"></span><span class="road r3"></span><span class="myLoc"></span>
+  <button class="mapPin pin1">✂<i class="miniStatus green"></i></button>
+  <button class="mapPin pin2">💈<i class="miniStatus orange"></i></button>
+  <button class="mapPin pin3">✂<i class="miniStatus green"></i></button>
+ </div>
+ <div id="mapBarberList" class="barberList" style="margin-top:10px"></div>
+</section>
+
+<!-- USER PROFILE -->
+<section class="screen" id="customerProfile">
+ <div class="sectionTitle" style="margin-top:2px"><div><h2>حسابي</h2><small>إعدادات وتجربة الاستخدام</small></div></div>
+ <div class="formCard"><h3>المظهر واللغة</h3>
+  <div class="switchRow"><div><b>الوضع الداكن</b><small>تحويل فوري بين الفاتح والداكن</small></div><div class="switch" id="darkSwitch" onclick="toggleDark()"></div></div>
+  <div class="switchRow"><div><b>English</b><small>Switch application language</small></div><div class="switch" id="langSwitch" onclick="toggleLanguage()"></div></div>
+ </div>
+ <div class="formCard"><h3>الحجوزات المحفوظة</h3><div id="savedBookings"></div></div>
+ <div class="formCard"><h3>الحساب</h3><button class="secondary" style="width:100%" onclick="openRoleModal()">تبديل / تسجيل الدخول بحساب آخر</button></div>
+</section>
+
+<!-- BARBER DASHBOARD -->
+<section class="screen" id="barberHome">
+ <div class="hero"><span class="eyebrow">BARBER DASHBOARD</span><h1 id="barberWelcome">أهلاً بالحلاق</h1><p id="barberStatusText">معلومات الحساب والدوام والحجوزات تتغير وفق حساب الحلاق الحالي.</p></div>
+ <div class="dashboard-kpi" style="margin-top:10px">
+ <div class="kpi-card"><b id="todayBookings">0</b><small>حجوزات اليوم</small></div>
+ <div class="kpi-card"><b id="barberRating">—</b><small>التقييم</small></div>
+ <div class="kpi-card"><b id="barberYears">—</b><small>سنوات الخبرة</small></div>
+</div>
+<div class="grid2" style="margin-top:10px">
+ <button class="card quick" onclick="showScreen('barberPage')"><span>▧</span><b>صفحتي</b><small>اعرض أعمالك للزبائن</small></button>
+ <button class="card quick" onclick="showScreen('barberSchedule')"><span>◷</span><b>إدارة الجدول</b><small>الدوام والاستراحة والمواعيد</small></button>
+</div>
+ <div class="grid2" style="margin-top:10px">
+  <button class="card quick" onclick="openChats()"><span>💬</span><b>رسائل الزبائن</b><small id="barberChatCount">المحادثات الخاصة بك</small></button>
+  <button class="card quick" onclick="showScreen('barberAccount')"><span>⇄</span><b>الصالون والانتقال</b><small>طلب انتقال أو إلغاء الارتباط</small></button>
+ </div>
+ <div class="formCard" style="margin-top:10px"><h3>حالتي الآن</h3><div class="serviceGrid"><button class="serviceChoice active" id="statusOnline" onclick="setBarberStatus('online')">متاح 🟢</button><button class="serviceChoice" id="statusBusy" onclick="setBarberStatus('busy')">مشغول 🟠</button><button class="serviceChoice" id="statusOffline" onclick="setBarberStatus('offline')">غير متاح ⚫</button><button class="serviceChoice" onclick="setBarberStatus('full')">محجوز بالكامل</button></div></div>
+ <div class="formCard"><h3>حجوزاتي</h3><div id="barberBookings"></div></div>
+ <div class="footerDev">Developed by <b>Hussein Al-Jawzi</b></div>
+</section>
+
+<!-- BARBER MY PAGE -->
+<section class="screen" id="barberPage">
+ <div class="sectionTitle" style="margin-top:2px"><div><h2>صفحتي</h2><small>أعمالك تتحول إلى معرض اجتماعي</small></div></div>
+ <div class="formCard"><h3>نشر عمل جديد</h3>
+  <label>صورة أو فيديو</label><input class="input" type="file" id="workMedia" accept="image/*,video/*" capture="environment">
+  <label>وصف العمل</label><textarea id="workCaption" placeholder="اكتب وصف القصة أو الخدمة..."></textarea>
+  <div class="inline"><div><label>نوع العمل</label><select id="workType"><option value="hair">قصة شعر</option><option value="beard">لحية</option><option value="event">مناسبات</option></select></div><div><label>السعر</label><input class="input" id="workPrice" type="number" placeholder="15000"></div></div>
+  <button class="primary" style="width:100%;margin-top:10px" onclick="publishWork()">نشر في صفحتي</button>
+ </div>
+ <div class="feed" id="myWorks"></div>
+</section>
+
+<!-- BARBER SCHEDULE -->
+<section class="screen" id="barberSchedule">
+ <div class="sectionTitle" style="margin-top:2px"><div><h2>الدوام والمواعيد</h2><small>عدّل أيام وساعات العمل والاستراحة</small></div></div>
+ <div class="formCard"><h3>جدول العمل الأسبوعي</h3><div id="scheduleDays"></div>
+  <div class="inline"><div><label>بداية الاستراحة</label><input class="input" type="time" id="breakStart" value="14:00"></div><div><label>نهاية الاستراحة</label><input class="input" type="time" id="breakEnd" value="15:00"></div></div>
+  <label>أقصى مدة للحجز المسبق</label><select id="bookingHorizon"><option value="1">يوم واحد</option><option value="2">يومان</option><option value="3">3 أيام</option><option value="4">4 أيام</option><option value="5">5 أيام</option><option value="6">6 أيام</option><option value="7" selected>أسبوع</option></select>
+  <div class="switchRow"><div><b>السماح بالتدخين داخل المكان</b><small>تظهر المعلومة للزبون قبل الحجز</small></div><div class="switch" id="smokingSwitch" onclick="toggleSmoking()"></div></div>
+  <button class="primary" style="width:100%;margin-top:10px" onclick="saveSchedule()">حفظ جدول الدوام</button>
+ </div>
+ <div class="formCard"><h3>أسعار خاصة</h3><label>حلاقة مناسبات</label><input class="input" id="eventPrice" type="number" placeholder="30000"><label>وصف ما تتضمنه حلاقة المناسبات</label><textarea id="eventBio" placeholder="مثلاً: تنظيف بشرة، أدوات خاصة للاستخدام مرة واحدة..."></textarea><label>حلاقة في منزلك — السعر للشخص</label><input class="input" id="homePrice" type="number" placeholder="25000"><button class="secondary" style="width:100%;margin-top:9px" onclick="saveSpecialServices()">حفظ الخدمات الخاصة</button></div>
+</section>
+
+<!-- BARBER ACCOUNT -->
+<section class="screen" id="barberAccount">
+ <div class="sectionTitle" style="margin-top:2px"><div><h2>حساب الحلاق</h2><small>معلومات الحساب الحالي فقط</small></div></div>
+ <div class="formCard" id="barberAccountInfo"></div>
+ <div class="formCard"><h3>الصالون والانتقال</h3>
+  <p>يبقى الحلاق في صالونه الحالي إلى أن يوافق الصالون الجديد على طلب الانتقال. ويمكنه إلغاء الارتباط أولاً إذا أراد العمل بشكل مستقل.</p>
+  <label>الصالون الحالي</label><div class="notice" id="currentSalonLabel">—</div>
+  <label>الانتقال إلى صالون آخر</label><select id="transferSalonSelect"></select>
+  <button class="primary" style="width:100%;margin-top:9px" onclick="requestSalonTransfer()">إرسال طلب انتقال</button>
+  <button class="secondary" style="width:100%;margin-top:7px" onclick="leaveCurrentSalon()">إلغاء ارتباطي بالصالون الحالي</button>
+  <div id="myTransferState"></div>
+ </div>
+ <div class="formCard"><h3>ظهور مميز</h3><p>الظهور المدفوع في أعلى النتائج مقابل 5$ شهرياً. الأعلى تقييماً يظهر مجاناً بشكل منفصل.</p><button class="goldBtn" style="width:100%" onclick="requestFeatured()">طلب اشتراك 5$ / شهر</button><div id="featuredState" class="notice hidden"></div></div>
+ <button class="secondary" style="width:100%" onclick="openRoleModal()">تسجيل الدخول كحلاق أو صالون آخر</button>
+</section>
+
+<!-- SALON HOME -->
+<section class="screen" id="salonHome">
+ <div class="hero"><span class="eyebrow">SALON</span><h1 id="salonTitle">إدارة الصالون</h1><p>صفحة الصالون، الصور والفيديوهات، فريق الحلاقين وطلبات الانضمام.</p></div>
+ <div class="statGrid" style="margin-top:10px"><div class="stat"><b id="salonTeamCount">0</b><small>حلاق</small></div><div class="stat"><b>4.8</b><small>تقييم</small></div><div class="stat"><b id="pendingCount">0</b><small>طلب انضمام</small></div></div>
+ <div class="formCard" style="margin-top:10px"><h3>حالة الصالون</h3><div class="serviceGrid"><button class="serviceChoice active">متاح 🟢</button><button class="serviceChoice">مشغول 🟠</button></div></div>
+</section>
+
+<section class="screen" id="salonPage">
+ <div class="sectionTitle" style="margin-top:2px"><div><h2>صفحة الصالون</h2><small>صور وفيديوهات ومعلومات المكان</small></div></div>
+ <div class="formCard"><label>اسم الصالون</label><input class="input" id="salonName"><label>الوصف</label><textarea id="salonBio"></textarea><label>رفع صور أو فيديو</label><input class="input" type="file" id="salonMedia" accept="image/*,video/*" multiple><button class="primary" style="width:100%;margin-top:9px" onclick="saveSalonProfile()">حفظ الصفحة</button></div>
+ <div class="mediaPreview" id="salonGallery"></div>
+</section>
+
+<section class="screen" id="salonTeam">
+ <div class="sectionTitle" style="margin-top:2px"><div><h2>فريق الصالون</h2><small>لا يدخل حلاق إلا بموافقة صاحب الصالون</small></div></div>
+ <div class="formCard"><h3>طلبات الانتقال إلى الصالون</h3><div id="salonTransferRequests"></div></div>
+ <div class="formCard"><h3>طلبات الانضمام</h3><div id="joinRequests"></div></div>
+ <div class="formCard"><h3>الحلاقون الحاليون</h3><div id="salonMembers"></div></div>
+</section>
+
+<section class="screen" id="salonAccount">
+ <div class="sectionTitle" style="margin-top:2px"><div><h2>حساب الصالون</h2></div></div>
+ <div class="formCard"><p>يمكن لصاحب الصالون تعديل صفحته وإضافة وإزالة الحلاقين والموافقة على طلبات الانضمام.</p></div>
+ <button class="secondary" style="width:100%" onclick="openRoleModal()">تبديل الحساب</button>
+</section>
+
+<!-- CHAT -->
+<section class="screen" id="chatScreen">
+ <div class="sectionTitle" style="margin-top:2px"><div><h2>الرسائل</h2><small>دردشة مباشرة بين الزبون والحلاق</small></div></div>
+ <div class="chatLayout">
+  <div class="chatInbox" id="chatInbox"></div>
+  <div class="chatBox hidden" id="chatBox">
+   <div class="chatHeader" id="chatHeader"></div>
+   <div class="messages" id="chatMessages"></div>
+   <div class="chatComposer"><input class="input" id="chatInput" placeholder="اكتب رسالة..." onkeydown="if(event.key==='Enter')sendChatMessage()"><button class="primary" onclick="sendChatMessage()">إرسال</button></div>
+  </div>
+ </div>
+</section>
+
+<!-- NOTIFICATIONS -->
+<section class="screen" id="notificationsScreen">
+ <div class="sectionTitle" style="margin-top:2px"><div><h2>الإشعارات</h2><small>تغييرات الحلاقين والحجوزات المهمة</small></div><button class="textBtn" onclick="markNotificationsRead()">تحديد كمقروء</button></div>
+ <div class="formCard"><div id="notificationsList"></div></div>
+</section>
+
+<!-- DEVELOPER -->
+<section class="screen" id="developerHome">
+ <div class="hero"><span class="eyebrow">DEVELOPER CONTROL</span><h1>لوحة المطور</h1><p>إدارة المستخدمين، الحلاقين، الروابط، الإعلانات، المستويات والبيانات التشغيلية.</p></div>
+ <div class="statGrid" style="margin-top:10px"><div class="stat"><b id="devUsers">0</b><small>مستخدم</small></div><div class="stat"><b id="devBarbers">0</b><small>حلاق</small></div><div class="stat"><b id="devPosts">0</b><small>منشور</small></div></div>
+ <details class="adminDrop" style="margin-top:10px"><summary>إضافة حلاق / صالون جديد <span>＋</span></summary><div class="detailsBody">
+  <label>النوع</label><select id="newAccountType"><option value="barber">حلاق</option><option value="salon">صالون</option></select><label>الاسم</label><input class="input" id="newAccountName"><label>رقم الهاتف</label><input class="input" id="newAccountPhone"><button class="primary" style="width:100%;margin-top:9px" onclick="developerAddAccount()">إضافة</button>
+ </div></details>
+ <div class="formCard"><h3>إعلانات التطبيق</h3><div class="switchRow"><div><b>تشغيل المساحات الإعلانية</b><small>جاهزة للربط مع مزود الإعلانات لاحقاً</small></div><div class="switch" id="adsSwitch" onclick="toggleAds()"></div></div></div>
+ <div class="footerDev">Developer: <b>Hussein Al-Jawzi</b></div>
+</section>
+
+<section class="screen" id="developerAnalytics">
+ <div class="sectionTitle" style="margin-top:2px"><div><h2>التحليلات</h2><small>متى يستخدم الناس التطبيق أكثر؟</small></div></div>
+ <div class="statGrid"><div class="stat"><b id="openCount">0</b><small>فتح التطبيق</small></div><div class="stat"><b id="busyHour">—</b><small>أنشط ساعة</small></div><div class="stat"><b id="busyDay">—</b><small>أنشط يوم</small></div></div>
+ <div class="formCard" style="margin-top:10px"><h3>نشاط الأيام</h3><div id="dayAnalytics"></div></div>
+ <div class="formCard"><h3>نشاط الساعات</h3><div id="hourAnalytics"></div></div>
+ <div class="notice">النسخة التجريبية تخزن التحليلات على الجهاز. عند ربط قاعدة البيانات ستصبح إحصاءات حقيقية لكل المستخدمين والأجهزة وتصلح للحملات الترويجية.</div>
+</section>
+
+<section class="screen" id="developerManage">
+ <div class="sectionTitle" style="margin-top:2px"><div><h2>الإدارة</h2><small>الحسابات والمستويات والروابط</small></div></div>
+ <div class="formCard"><h3>معلومات تسجيل المستخدمين</h3><p>نحفظ بيانات الحساب اللازمة للإدارة وآخر تسجيل دخول، ولا نعرض كلمات المرور كنص صريح لأسباب أمنية.</p><div id="loginRegistry"></div></div>
+ <div class="formCard"><h3>مستويات الحلاقين</h3><div id="barberLevels"></div></div>
+ <div class="formCard"><h3>روابط التواصل الاجتماعي</h3><p>أي رابط فارغ يختفي تماماً من الواجهة الرئيسية.</p><label>Instagram</label><input class="input socialInput" id="socialInstagram" placeholder="https://..."><label>TikTok</label><input class="input socialInput" id="socialTikTok" placeholder="https://..."><label>Facebook</label><input class="input socialInput" id="socialFacebook" placeholder="https://..."><label>YouTube</label><input class="input socialInput" id="socialYoutube" placeholder="https://..."><button class="primary" style="width:100%;margin-top:9px" onclick="saveSocialLinks()">حفظ الروابط</button></div>
+ <div class="formCard"><h3>طلبات الظهور المميز</h3><div id="featuredRequests"></div></div>
+</section>
+
+<section class="screen" id="developerAccount">
+ <div class="sectionTitle" style="margin-top:2px"><div><h2>حساب المطور</h2></div></div>
+ <div class="formCard"><h3>Hussein Al-Jawzi</h3><p>Developer access • الإدارة الكاملة للنسخة التجريبية</p></div>
+ <button class="secondary" style="width:100%" onclick="openRoleModal()">تبديل الحساب</button>
+</section>
+
+<nav class="bottomNav" id="bottomNav"></nav>
+</main>
+
+<!-- ROLE MODAL -->
+<div class="modal" id="roleModal"><div class="modalCard"><div class="grab"></div><div class="modalHead"><div><h2>تسجيل الدخول</h2><small style="color:var(--muted)">اختر نوع الحساب</small></div><button class="close" onclick="closeModal('roleModal')">×</button></div>
+ <div class="roleCards">
+  <button class="roleCard" onclick="loginAs('customer')"><b>زبون</b><small>استكشف الحلاقين واحجز موعدك</small></button>
+  <button class="roleCard" onclick="openLoginForm('barber')"><b>حلاق أو صالون</b><small>تسجيل الدخول وإدارة العمل</small></button>
+  <button class="roleCard" onclick="loginAs('developer')"><b>المطور</b><small>لوحة الإدارة والتحليلات</small></button>
+ </div>
+ <div id="loginForm" class="hidden" style="margin-top:12px"><label>نوع الحساب</label><select id="loginType" onchange="refreshLoginAccounts()"><option value="barber">حلاق</option><option value="salon">صالون</option></select><label>الحساب</label><select id="loginAccount"></select><div class="switchRow"><div><b>تذكر تسجيل الدخول</b><small>يبقى الحساب محفوظاً على هذا الجهاز</small></div><div class="switch on" id="rememberSwitch" onclick="this.classList.toggle('on')"></div></div><button class="primary" style="width:100%;margin-top:8px" onclick="submitRoleLogin()">دخول</button><button class="secondary" style="width:100%;margin-top:7px" onclick="openRegistration()">تسجيل حلاق أو صالون جديد</button></div>
+</div></div>
+
+<!-- REGISTER MODAL -->
+<div class="modal" id="registerModal"><div class="modalCard"><div class="grab"></div><div class="modalHead"><h2>طلب تسجيل مهني</h2><button class="close" onclick="closeModal('registerModal')">×</button></div>
+ <div class="notice">سيتم تدقيق المعلومات من قبل المطور. إذا كانت المعلومات غير صحيحة سيتم إهمال الطلب، ولن يسمح بإرسال طلب جديد إلا بعد مرور 48 ساعة من الطلب الأول.</div>
+ <label>التسجيل كـ</label><select id="regType" onchange="toggleRegType()"><option value="barber">حلاق</option><option value="salon">صالون</option></select>
+ <label>الاسم الكامل / اسم الصالون</label><input class="input" id="regName"><label>رقم الهاتف</label><input class="input" id="regPhone">
+ <div id="barberRegFields"><label>سنوات الخبرة</label><select id="regYears"></select><label>الصالون</label><select id="regSalon"></select><label>أو اكتب اسم صالون جديد</label><input class="input" id="regNewSalon"><label>الموقع</label><button class="secondary" style="width:100%" onclick="detectLocation()">تثبيت موقعي الحالي</button></div>
+ <button class="primary" style="width:100%;margin-top:12px" onclick="submitRegistration()">إرسال الطلب</button>
+</div></div>
+
+<!-- COMMENTS MODAL -->
+<div class="modal" id="commentsModal"><div class="modalCard"><div class="grab"></div><div class="modalHead"><h2>التعليقات</h2><button class="close" onclick="closeModal('commentsModal')">×</button></div><div id="commentsList"></div><label>أضف تعليقاً</label><textarea id="commentInput" placeholder="اكتب تعليقك..."></textarea><button class="primary" style="width:100%;margin-top:8px" onclick="addComment()">نشر التعليق</button></div></div>
+
+<button class="mode-toggle-fixed" id="quickThemeBtn" onclick="toggleDark()" title="تبديل المظهر">☀︎</button>
+<div class="toast" id="toast"></div>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const LS=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
+const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+let currentRole=localStorage.getItem('halaqi_role')||'customer';
+let currentBarberId=localStorage.getItem('halaqi_barber')||'b1';
+let currentSalonId=localStorage.getItem('halaqi_salon')||'s1';
+let currentPostId=null, feedFilter='all', catalogTexture='all', simpleBooking=false, selectedServices=[];
+let geo={lat:null,lng:null,province:'بغداد'};
+
+const users=LS('halaqi_users',[
+ {id:'u1',name:'حسين',role:'customer',phone:'07700000001',lastLogin:Date.now()},
+ {id:'b1u',name:'علي حسين',role:'barber',phone:'07700000011',lastLogin:Date.now()},
+ {id:'b2u',name:'مصطفى كريم',role:'barber',phone:'07700000022',lastLogin:Date.now()},
+ {id:'s1u',name:'صالون الملك',role:'salon',phone:'07700000033',lastLogin:Date.now()}
+]);
+let salons=LS('halaqi_salons',[
+ {id:'s1',name:'صالون الملك',owner:'أحمد سالم',bio:'صالون رجالي متكامل في المنصور.',rating:4.8,status:'online',lat:33.315,lng:44.354,gallery:[],members:['b1'],pending:['b2']}
+]);
+let barbers=LS('halaqi_barbers',[
+ {id:'b1',name:'علي حسين',phone:'07700000011',salonId:'s1',years:9,rating:4.9,level:'ذهبي',status:'online',smoking:false,lat:33.314,lng:44.356,featuredUntil:0,eventPrice:35000,eventBio:'تنظيف بشرة، أدوات استخدام مرة واحدة، تصفيف كامل ولمسات نهائية للمناسبة.',homePrice:25000,horizon:7,schedule:{}},
+ {id:'b2',name:'مصطفى كريم',phone:'07700000022',salonId:null,years:6,rating:4.8,level:'موثق',status:'busy',smoking:true,lat:33.302,lng:44.369,featuredUntil:Date.now()+9*86400000,eventPrice:30000,eventBio:'قص وتصفيف مناسب للمناسبات مع ترتيب اللحية.',homePrice:22000,horizon:5,schedule:{}},
+ {id:'b3',name:'سيف مهدي',phone:'07700000044',salonId:null,years:4,rating:4.7,level:'موثق',status:'online',smoking:false,lat:33.325,lng:44.341,featuredUntil:0,eventPrice:28000,eventBio:'تجهيز كامل للمناسبة.',homePrice:20000,horizon:7,schedule:{}}
+]);
+let posts=LS('halaqi_posts',[
+ {id:'p1',ownerId:'b1',ownerType:'barber',owner:'علي حسين',caption:'Low Fade نظيف مع تحديد خفيف يناسب الشعر الطبيعي والويفي.',image:'https://images.pexels.com/photos/12074386/pexels-photo-12074386.jpeg?auto=compress&cs=tinysrgb&w=800',likes:184,dislikes:6,comments:[{name:'كرار',text:'شغل مرتب جداً',time:Date.now()}],price:18000,type:'hair'},
+ {id:'p2',ownerId:'s1',ownerType:'salon',owner:'صالون الملك',caption:'تجهيز مناسبات داخل الصالون مع عناية متكاملة.',image:'https://images.pexels.com/photos/3998415/pexels-photo-3998415.jpeg?auto=compress&cs=tinysrgb&w=800',likes:222,dislikes:4,comments:[],price:35000,type:'event'},
+ {id:'p3',ownerId:'b2',ownerType:'barber',owner:'مصطفى كريم',caption:'ترتيب لحية طويلة مع تدرج وربط الجوانب.',image:'https://images.pexels.com/photos/7518710/pexels-photo-7518710.jpeg?auto=compress&cs=tinysrgb&w=800',likes:151,dislikes:8,comments:[],price:14000,type:'beard'}
+]);
+const catalog=[
+ {id:'c1',name:'Low Fade',age:'adult',length:'short',texture:['natural','wavy'],img:'https://images.pexels.com/photos/12074386/pexels-photo-12074386.jpeg?auto=compress&cs=tinysrgb&w=600'},
+ {id:'c2',name:'Classic Crop',age:'adult',length:'short',texture:['natural','wavy'],img:'https://images.pexels.com/photos/4952625/pexels-photo-4952625.jpeg?auto=compress&cs=tinysrgb&w=600'},
+ {id:'c3',name:'Curly Taper',age:'adult',length:'medium',texture:['curly'],img:'https://images.pexels.com/photos/3992870/pexels-photo-3992870.jpeg?auto=compress&cs=tinysrgb&w=600'},
+ {id:'c4',name:'Medium Flow',age:'adult',length:'medium',texture:['natural','wavy'],img:'https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=600'},
+ {id:'c5',name:'Long Layers',age:'adult',length:'long',texture:['natural','wavy','curly'],img:'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=600'},
+ {id:'c6',name:'Kids Short Fade',age:'kid',length:'short',texture:['natural','wavy','curly'],img:'https://images.pexels.com/photos/3661264/pexels-photo-3661264.jpeg?auto=compress&cs=tinysrgb&w=600'},
+ {id:'c7',name:'Kids Medium Cut',age:'kid',length:'medium',texture:['natural','wavy','curly'],img:'https://images.pexels.com/photos/3771645/pexels-photo-3771645.jpeg?auto=compress&cs=tinysrgb&w=600'},
+ {id:'c8',name:'Kids Long Style',age:'kid',length:'long',texture:['natural','wavy','curly'],img:'https://images.pexels.com/photos/3662667/pexels-photo-3662667.jpeg?auto=compress&cs=tinysrgb&w=600'}
+];
+const services=[
+ {id:'hair',name:'حلاقة شعر',price:12000},{id:'beard',name:'ترتيب لحية',price:8000},{id:'wash',name:'غسل وتصفيف',price:5000},{id:'facial',name:'تنظيف بشرة',price:10000},{id:'event',name:'حلاقة مناسبات',price:0},{id:'home',name:'حلاقة في منزلك',price:0}
+];
+let bookings=LS('halaqi_bookings',[]);
+let social=LS('halaqi_social',{instagram:'',tiktok:'',facebook:'',youtube:''});
+let featuredRequests=LS('halaqi_featured_requests',[]);
+let analytics=LS('halaqi_analytics',[]);
+let chats=LS('halaqi_chats',[]);
+let notifications=LS('halaqi_notifications',[]);
+let transferRequests=LS('halaqi_transfer_requests',[]);
+let currentChatId=null;
+const currentCustomerId='u1';
+
+function migrateSalonMemberships(){
+ if(!salons.some(s=>s.id==='s2')){
+  salons.push({id:'s2',name:'صالون النخبة',owner:'مهند قاسم',bio:'صالون رجالي حديث في اليرموك.',rating:4.7,status:'online',lat:33.301,lng:44.367,gallery:[],members:[],pending:[]});
+ }
+ if(!users.some(u=>u.id==='s2u')) users.push({id:'s2u',name:'صالون النخبة',role:'salon',phone:'07700000055',lastLogin:Date.now()});
+ const b1=barbers.find(b=>b.id==='b1'), b2=barbers.find(b=>b.id==='b2'), b3=barbers.find(b=>b.id==='b3');
+ if(b1&&!b1.salonId)b1.salonId='s1';
+ if(b2&&!b2.salonId)b2.salonId='s2';
+ if(b3&&!b3.salonId)b3.salonId='s1';
+ salons.forEach(s=>{s.members=[];s.pending=s.pending||[]});
+ barbers.forEach(b=>{if(b.salonId){const s=salons.find(x=>x.id===b.salonId);if(s&&!s.members.includes(b.id))s.members.push(b.id)}});
+ save('halaqi_users',users);save('halaqi_barbers',barbers);save('halaqi_salons',salons)
+}
+migrateSalonMemberships();
+
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),2200)}
+function closeModal(id){$('#'+id).classList.remove('show')}
+function openRoleModal(){$('#roleModal').classList.add('show')}
+function track(action='open'){analytics.push({action,time:Date.now(),hour:new Date().getHours(),day:new Date().getDay()});if(analytics.length>3000)analytics=analytics.slice(-3000);save('halaqi_analytics',analytics)}
+function currentBarber(){return barbers.find(b=>b.id===currentBarberId)||barbers[0]}
+function currentSalon(){return salons.find(s=>s.id===currentSalonId)||salons[0]}
+function persistAll(){save('halaqi_users',users);save('halaqi_barbers',barbers);save('halaqi_salons',salons);save('halaqi_posts',posts);save('halaqi_bookings',bookings);save('halaqi_featured_requests',featuredRequests);save('halaqi_chats',chats);save('halaqi_notifications',notifications);save('halaqi_transfer_requests',transferRequests)}
+function showScreen(id,push=true){
+ const cur=$('.screen.active'); if(push&&cur&&cur.id!==id){let h=LS('halaqi_history',[]);h.push(cur.id);save('halaqi_history',h.slice(-20))}
+ $$('.screen').forEach(s=>s.classList.toggle('active',s.id===id)); updateNavActive(id); track('screen:'+id); window.scrollTo({top:0,behavior:'smooth'});
+}
+function goBack(){let h=LS('halaqi_history',[]);const id=h.pop();save('halaqi_history',h);if(id)showScreen(id,false);else showScreen(homeForRole(),false)}
+function homeForRole(){return currentRole==='barber'?'barberHome':currentRole==='salon'?'salonHome':currentRole==='developer'?'developerHome':'customerHome'}
+$('#backBtn').onclick=goBack;$('#roleBtn').onclick=openRoleModal;
+
+const navs={
+ customer:[['customerHome','⌂','الرئيسية'],['explore','◉','استكشف'],['booking','✂','احجز'],['customerProfile','◌','حسابي']],
+ barber:[['barberHome','⌂','الرئيسية'],['barberPage','▧','صفحتي'],['barberSchedule','◷','المواعيد'],['barberAccount','◌','الحساب']],
+ salon:[['salonHome','⌂','الرئيسية'],['salonPage','▧','صفحتي'],['salonTeam','♟','الفريق'],['salonAccount','◌','الحساب']],
+ developer:[['developerHome','⌂','الرئيسية'],['developerAnalytics','◫','التحليلات'],['developerManage','⚙','الإدارة'],['developerAccount','◌','الحساب']]
+};
+function renderNav(){const n=navs[currentRole];$('#bottomNav').innerHTML=n.map((x,i)=>`<button class="navBtn ${i===0?'active':''}" data-screen="${x[0]}" onclick="showScreen('${x[0]}')"><span>${x[1]}</span>${x[2]}</button>`).join('')}
+function updateNavActive(id){$$('.navBtn').forEach(b=>b.classList.toggle('active',b.dataset.screen===id))}
+function loginAs(role){
+ currentRole=role;localStorage.setItem('halaqi_role',role);closeModal('roleModal');renderNav();showScreen(homeForRole(),false);renderAll();track('login:'+role)
+}
+function openLoginForm(type){$('#loginForm').classList.remove('hidden');$('#loginType').value=type;refreshLoginAccounts()}
+function refreshLoginAccounts(){
+ const type=$('#loginType').value, sel=$('#loginAccount');
+ const list=type==='barber'?barbers:salons;sel.innerHTML=list.map(x=>`<option value="${x.id}">${x.name}</option>`).join('')
+}
+function submitRoleLogin(){
+ const type=$('#loginType').value,id=$('#loginAccount').value;
+ if(type==='barber'){currentBarberId=id;localStorage.setItem('halaqi_barber',id)}else{currentSalonId=id;localStorage.setItem('halaqi_salon',id)}
+ const item=(type==='barber'?barbers:salons).find(x=>x.id===id);let u=users.find(x=>x.name===item.name)||users.find(x=>x.role===type);if(u)u.lastLogin=Date.now();save('halaqi_users',users);
+ loginAs(type)
+}
+function openRegistration(){closeModal('roleModal');$('#registerModal').classList.add('show');populateRegYears();populateRegSalons()}
+function populateRegYears(){$('#regYears').innerHTML=Array.from({length:25},(_,i)=>`<option value="${i+1}">${i+1} ${i?'سنوات':'سنة'}</option>`).join('')}
+function populateRegSalons(){$('#regSalon').innerHTML='<option value="">بدون صالون</option>'+salons.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}
+function toggleRegType(){$('#barberRegFields').classList.toggle('hidden',$('#regType').value==='salon')}
+function submitRegistration(){
+ const last=Number(localStorage.getItem('halaqi_last_registration')||0);if(Date.now()-last<48*3600000){toast('لا يمكن إرسال طلب جديد قبل مرور 48 ساعة');return}
+ const type=$('#regType').value,name=$('#regName').value.trim(),phone=$('#regPhone').value.trim();if(!name||!phone){toast('أكمل الاسم ورقم الهاتف');return}
+ localStorage.setItem('halaqi_last_registration',Date.now());
+ if(type==='barber'){
+  const id='b'+Date.now();const salonId=$('#regSalon').value||null;
+  barbers.push({id,name,phone,salonId,years:Number($('#regYears').value),rating:0,level:'قيد التدقيق',status:'offline',smoking:false,lat:geo.lat,lng:geo.lng,featuredUntil:0,eventPrice:0,eventBio:'',homePrice:0,horizon:7,schedule:{}});
+  users.push({id:id+'u',name,role:'barber',phone,lastLogin:Date.now()});
+  if(salonId){const s=salons.find(x=>x.id===salonId);if(s&&!s.pending.includes(id))s.pending.push(id)}
+ }else{
+  const id='s'+Date.now();salons.push({id,name,owner:name,bio:'',rating:0,status:'offline',lat:geo.lat,lng:geo.lng,gallery:[],members:[],pending:[]});users.push({id:id+'u',name,role:'salon',phone,lastLogin:Date.now()})
+ }
+ persistAll();closeModal('registerModal');toast('تم إرسال الطلب للتدقيق');renderAll()
+}
+
+function detectLocation(){
+ if(!navigator.geolocation){$('#locationName').textContent='بغداد';return}
+ navigator.geolocation.getCurrentPosition(p=>{geo.lat=p.coords.latitude;geo.lng=p.coords.longitude;geo.province='موقعك الحالي';$('#locationName').textContent='موقعك الحالي';$('#locationCoords').textContent=`${geo.lat.toFixed(4)}, ${geo.lng.toFixed(4)}`;toast('تم تثبيت موقعك')},()=>{$('#locationName').textContent='بغداد';$('#locationCoords').textContent='لم يتم السماح بالموقع — تم استخدام بغداد مؤقتاً'})
+}
+
+function renderOnlineBarbers(){
+ const now=barbers.filter(b=>b.status==='online'||b.status==='busy').sort((a,b)=>(b.featuredUntil>Date.now())-(a.featuredUntil>Date.now())||b.rating-a.rating);
+ $('#onlineBarbers').innerHTML=now.map(barberHTML).join('')||'<div class="card"><p>لا يوجد حلاق متاح حالياً.</p></div>';
+ $('#topRated').innerHTML=[...barbers].sort((a,b)=>b.rating-a.rating).slice(0,2).map(barberHTML).join('');
+ $('#mapBarberList').innerHTML=now.map(barberHTML).join('')
+}
+function barberHTML(b){
+ const s=b.status==='online'?['green','متاح الآن']:b.status==='busy'?['orange','مشغول']:['gray','غير متاح'];
+ return `<article class="barberCard"><div class="avatar">✂</div><div><h3>${esc(b.name)} ${b.featuredUntil>Date.now()?'<span class="badge sponsored">مميز</span>':''}</h3><p><i class="statusDot ${s[0]}"></i>${s[1]} • ${esc(salonName(b.salonId)||'مستقل')} • ${b.years} سنوات خبرة</p><span class="rating">★ ${b.rating||'جديد'} • ${b.level}</span></div><div class="barberActions"><button class="primary" onclick="bookBarber('${b.id}')">احجز</button><button class="secondary" onclick="startChat('${b.id}')">دردشة</button></div></article>`
+}
+function bookBarber(id){currentBarberId=id;openBooking(true)}
+function openBooking(onlineOnly=false){
+ showScreen('booking');renderBookingBarbers(onlineOnly);if(currentBarberId)$('#bookingBarber').value=currentBarberId;updateBookingInfo()
+}
+function renderBookingBarbers(onlineOnly=false){
+ let list=onlineOnly?barbers.filter(b=>b.status==='online'):barbers.filter(b=>b.status!=='offline'&&b.status!=='full');
+ $('#bookingBarber').innerHTML=list.map(b=>`<option value="${b.id}">${b.name} — ${b.status==='online'?'متاح':'مشغول'}</option>`).join('')
+}
+function renderServices(){
+ $('#serviceChoices').innerHTML=services.map(s=>`<button class="serviceChoice" data-service="${s.id}" onclick="toggleService('${s.id}',this)">${s.name}</button>`).join('')
+}
+function toggleService(id,btn){selectedServices.includes(id)?selectedServices=selectedServices.filter(x=>x!==id):selectedServices.push(id);btn.classList.toggle('active');$('#homeServiceFields').classList.toggle('hidden',!selectedServices.includes('home'));updateBookingInfo();calculateBooking()}
+function toggleSimpleBooking(){simpleBooking=!simpleBooking;$('#simpleBookingSwitch').classList.toggle('on',simpleBooking);$('#detailedStyleFields').classList.toggle('hidden',simpleBooking)}
+function updateBookingInfo(){
+ const b=barbers.find(x=>x.id===$('#bookingBarber').value)||currentBarber();currentBarberId=b.id;
+ $('#eventInfo').classList.toggle('hidden',!selectedServices.includes('event'));if(selectedServices.includes('event'))$('#eventInfo').innerHTML=`<b>حلاقة مناسبات — ${money(b.eventPrice)}</b><br>${esc(b.eventBio||'لم يضف الحلاق تفاصيل هذه الخدمة بعد.')}`;
+ renderBookingDays(b);calculateBooking()
+}
+function calculateBooking(){
+ const b=barbers.find(x=>x.id===$('#bookingBarber').value)||currentBarber();let total=0;
+ selectedServices.forEach(id=>{const s=services.find(x=>x.id===id);if(id==='event')total+=Number(b.eventPrice||0);else if(id==='home')total+=Number(b.homePrice||0)*Math.max(1,Number($('#homePeople').value||1));else total+=s.price});
+ $('#priceSummary').textContent=selectedServices.length?`السعر التقريبي: ${money(total)} • ${selectedServices.map(id=>services.find(s=>s.id===id).name).join(' + ')}`:'اختر خدمة واحدة أو أكثر.';
+ return total
+}
+function renderBookingDays(b){
+ const days=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],h=Math.min(7,Number(b.horizon||7));
+ $('#bookingDay').innerHTML=Array.from({length:h},(_,i)=>{const d=new Date();d.setDate(d.getDate()+i);return `<option value="${d.toISOString().slice(0,10)}">${i?'بعد '+i+' يوم':'اليوم'} — ${days[d.getDay()]}</option>`}).join('');
+ $('#bookingTime').innerHTML=['10:00','11:00','12:00','13:00','16:00','17:00','18:00','19:00','20:00'].map(t=>`<option>${t}</option>`).join('')
+}
+function confirmBooking(){
+ if(!selectedServices.length){toast('اختر خدمة واحدة على الأقل');return}
+ const b=barbers.find(x=>x.id===$('#bookingBarber').value);const booking={id:'bk'+Date.now(),customerId:currentCustomerId,barberId:b.id,barber:b.name,salonId:b.salonId||null,salonName:salonName(b.salonId)||'حلاق مستقل',services:[...selectedServices],style:simpleBooking?'حجز سريع':$('#selectedStyleInput').value||'غير محدد',hairLength:$('#bookHairLength').value,texture:$('#bookTexture').value,beard:$('#bookBeard').value,day:$('#bookingDay').value,time:$('#bookingTime').value,total:calculateBooking(),createdAt:Date.now(),reminderSent:false};
+ bookings.push(booking);save('halaqi_bookings',bookings);toast('تم تثبيت الحجز');renderSavedBookings();renderBarberDashboard();track('booking')
+}
+function sendBookingWhatsApp(){
+ const b=barbers.find(x=>x.id===$('#bookingBarber').value);if(!b){toast('اختر الحلاق');return}
+ const details=`حجز من تطبيق حلاقي\nالحلاق: ${b.name}\nالخدمات: ${selectedServices.map(id=>services.find(s=>s.id===id).name).join(' + ')||'غير محددة'}\nالقصة: ${simpleBooking?'حجز بدون تفاصيل':($('#selectedStyleInput').value||'غير محددة')}\nنوع الشعر: ${simpleBooking?'—':$('#bookTexture').value}\nطول الشعر: ${simpleBooking?'—':$('#bookHairLength').value}\nاللحية: ${simpleBooking?'—':$('#bookBeard').value}\nاليوم: ${$('#bookingDay').value}\nالوقت: ${$('#bookingTime').value}\nالسعر التقريبي: ${money(calculateBooking())}`;
+ window.open('https://wa.me/?text='+encodeURIComponent(details),'_blank')
+}
+function renderSavedBookings(){
+ $('#savedBookings').innerHTML=bookings.length?bookings.slice().reverse().map(b=>`<div class="loginRow"><div><b>${esc(b.barber)}</b><small>${b.day} • ${b.time} • ${money(b.total)}</small></div><span class="badge">${b.services.length} خدمة</span></div>`).join(''):'<p style="color:var(--muted);font-size:9px">لا توجد حجوزات محفوظة.</p>'
+}
+function chooseStyle(id){
+ const c=catalog.find(x=>x.id===id);$('#selectedStyleInput').value=c.name;$('#bookHairLength').value=c.length==='short'?'قصير':c.length==='medium'?'متوسط':'طويل';showScreen('booking');renderBookingBarbers(false);renderServices();toast('تم تثبيت القصة في نموذج الحجز')
+}
+
+function renderCatalog(){
+ const a=$('#catAge').value,l=$('#catLength').value;
+ const list=catalog.filter(c=>(a==='all'||c.age===a)&&(l==='all'||c.length===l)&&(catalogTexture==='all'||c.texture.includes(catalogTexture)));
+ $('#catalogGrid').innerHTML=list.map(c=>`<article class="styleCard"><img src="${c.img}" onerror="this.style.display='none'"><div class="body"><b>${c.name}</b><small>${c.age==='kid'?'أطفال':'بالغ'} • ${c.length==='short'?'قصير':c.length==='medium'?'متوسط':'طويل'} • ${c.texture.join(' / ')}</small><button class="secondary" onclick="chooseStyle('${c.id}')">اختيار هذه القصة</button></div></article>`).join('')
+}
+function setTexture(v,el){catalogTexture=v;$$('.texture').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderCatalog()}
+
+function renderFeed(){
+ let list=[...posts];if(feedFilter==='barber')list=list.filter(p=>p.ownerType==='barber');if(feedFilter==='salon')list=list.filter(p=>p.ownerType==='salon');if(feedFilter==='popular')list.sort((a,b)=>b.likes-a.likes);
+ $('#feed').innerHTML=list.map(postHTML).join('');renderMyWorks()
+}
+function postHTML(p){return `<article class="post"><div class="postHead"><div class="avatar">${p.ownerType==='salon'?'💈':'✂'}</div><div><b>${esc(p.owner)}</b><small>${p.ownerType==='salon'?'صالون':'حلاق'} • ${p.type==='beard'?'لحية':p.type==='event'?'مناسبات':'قصة شعر'}</small></div></div><img class="postImage" src="${p.image}" onerror="this.style.display='none'"><div class="postBody"><b style="font-size:11px">${money(p.price)}</b><p>${esc(p.caption)}</p><div class="reactRow"><button onclick="reactPost('${p.id}','like')">♡ ${p.likes}</button><button onclick="reactPost('${p.id}','dislike')">⌁ ${p.dislikes}</button><button onclick="openComments('${p.id}')">💬 ${p.comments.length} تعليق</button></div></div></article>`}
+function setFeedFilter(v,el){feedFilter=v;$$('#explore .chip').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderFeed()}
+function reactPost(id,type){const p=posts.find(x=>x.id===id);type==='like'?p.likes++:p.dislikes++;save('halaqi_posts',posts);renderFeed()}
+const banned=['قندرة','حمار','كلب','تافه','خرا','زفت','لعنة'];
+function sanitizeComment(t){let out=t;for(const w of banned){const re=new RegExp(w,'gi');out=out.replace(re,'***')}return out.replace(/(.)\1{6,}/g,'$1$1$1')}
+function openComments(id){currentPostId=id;const p=posts.find(x=>x.id===id);$('#commentsList').innerHTML=p.comments.map(c=>`<div class="comment"><b>${esc(c.name)}</b><p>${esc(c.text)}</p><small>${new Date(c.time).toLocaleString('ar-IQ')}</small></div>`).join('')||'<p style="color:var(--muted);font-size:9px">كن أول من يعلّق.</p>';$('#commentsModal').classList.add('show')}
+function addComment(){const t=$('#commentInput').value.trim();if(!t)return;const clean=sanitizeComment(t);const p=posts.find(x=>x.id===currentPostId);p.comments.push({name:currentRole==='barber'?currentBarber().name:currentRole==='salon'?currentSalon().name:'زبون',text:clean,time:Date.now()});save('halaqi_posts',posts);$('#commentInput').value='';openComments(currentPostId);renderFeed();if(clean!==t)toast('تم تنقية الكلمات غير المناسبة')}
+function renderMyWorks(){const el=$('#myWorks');if(!el)return;el.innerHTML=posts.filter(p=>p.ownerId===currentBarberId).map(postHTML).join('')||'<div class="card"><p>لم تنشر أعمالاً بعد.</p></div>'}
+function publishWork(){
+ const file=$('#workMedia').files[0],caption=$('#workCaption').value.trim();if(!file||!caption){toast('أضف صورة ووصفاً للعمل');return}
+ const r=new FileReader();r.onload=()=>{posts.unshift({id:'p'+Date.now(),ownerId:currentBarberId,ownerType:'barber',owner:currentBarber().name,caption:sanitizeComment(caption),image:r.result,likes:0,dislikes:0,comments:[],price:Number($('#workPrice').value||0),type:$('#workType').value});save('halaqi_posts',posts);$('#workCaption').value='';$('#workMedia').value='';renderFeed();toast('تم نشر العمل في صفحتك')};r.readAsDataURL(file)
+}
+
+function renderBarberDashboard(){
+ const b=currentBarber();const chatCount=chats.filter(c=>c.barberId===b.id).length;const chatLabel=$('#barberChatCount');if(chatLabel)chatLabel.textContent=`${chatCount} محادثة مرتبطة بحسابك`;$('#barberWelcome').textContent='أهلاً، '+b.name;$('#barberStatusText').textContent=`المستوى: ${b.level} • ${b.saloonId||b.salonId?salonName(b.salonId):'حلاق مستقل'}`;$('#barberRating').textContent=b.rating||'جديد';$('#barberYears').textContent=b.years;const bs=bookings.filter(x=>x.barberId===b.id);$('#todayBookings').textContent=bs.length;$('#barberBookings').innerHTML=bs.length?bs.slice().reverse().map(x=>`<div class="loginRow"><div><b>${x.day} • ${x.time}</b><small>${x.services.map(id=>services.find(s=>s.id===id).name).join(' + ')}</small></div><span>${money(x.total)}</span></div>`).join(''):'<p style="color:var(--muted);font-size:9px">لا توجد حجوزات بعد.</p>';renderBarberAccount()
+}
+function setBarberStatus(s){currentBarber().status=s;save('halaqi_barbers',barbers);renderOnlineBarbers();toast('تم تحديث حالة الحلاق')}
+function salonName(id){return salons.find(s=>s.id===id)?.name||'صالون'}
+function renderBarberAccount(){
+ const b=currentBarber(),s=b.salonId?salonName(b.salonId):'مستقل';
+ $('#barberAccountInfo').innerHTML=`<h3>${esc(b.name)}</h3><p>الهاتف: ${esc(b.phone)}<br>سنوات الخبرة: ${b.years}<br>الصالون: ${esc(s)}<br>المستوى: ${esc(b.level)}<br>التدخين: ${b.smoking?'مسموح':'غير مسموح'}</p>`;
+ const currentLabel=$('#currentSalonLabel');if(currentLabel)currentLabel.textContent=b.salonId?`أنت حالياً ضمن ${salonName(b.salonId)}`:'أنت تعمل حالياً كحلاق مستقل';
+ const sel=$('#transferSalonSelect');if(sel)sel.innerHTML=salons.filter(x=>x.id!==b.salonId).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');
+ const state=$('#myTransferState');if(state){const r=transferRequests.find(x=>x.barberId===b.id&&x.status==='pending');state.innerHTML=r?`<div class="notice">طلب انتقال قيد الموافقة إلى ${esc(salonName(r.toSalonId))}</div>`:''}
+ const f=$('#featuredState');if(b.featuredUntil>Date.now()){f.classList.remove('hidden');f.textContent='الاشتراك المميز فعال حتى '+new Date(b.featuredUntil).toLocaleDateString('ar-IQ')}else f.classList.add('hidden')
+}
+function renderSchedule(){
+ const days=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],b=currentBarber();$('#scheduleDays').innerHTML=days.map((d,i)=>`<div class="scheduleDay"><label><input type="checkbox" data-day="${i}" ${b.schedule?.[i]?.on!==false?'checked':''}>${d}</label><input type="time" data-start="${i}" value="${b.schedule?.[i]?.start||'10:00'}"><input type="time" data-end="${i}" value="${b.schedule?.[i]?.end||'21:00'}"></div>`).join('');$('#bookingHorizon').value=b.horizon||7;$('#eventPrice').value=b.eventPrice||'';$('#eventBio').value=b.eventBio||'';$('#homePrice').value=b.homePrice||'';$('#smokingSwitch').classList.toggle('on',b.smoking)
+}
+function saveSchedule(){const b=currentBarber();b.schedule={};for(let i=0;i<7;i++)b.schedule[i]={on:$(`[data-day="${i}"]`).checked,start:$(`[data-start="${i}"]`).value,end:$(`[data-end="${i}"]`).value};b.horizon=Math.min(7,Number($('#bookingHorizon').value));save('halaqi_barbers',barbers);toast('تم حفظ الدوام')}
+function toggleSmoking(){const b=currentBarber();b.smoking=!b.smoking;$('#smokingSwitch').classList.toggle('on',b.smoking);save('halaqi_barbers',barbers)}
+function saveSpecialServices(){const b=currentBarber();b.eventPrice=Number($('#eventPrice').value||0);b.eventBio=$('#eventBio').value.trim();b.homePrice=Number($('#homePrice').value||0);save('halaqi_barbers',barbers);toast('تم حفظ الأسعار والخدمات')}
+function requestFeatured(){const b=currentBarber();if(featuredRequests.some(r=>r.barberId===b.id&&r.status==='pending')){toast('لديك طلب قيد الانتظار');return}featuredRequests.push({id:'fr'+Date.now(),barberId:b.id,name:b.name,price:5,status:'pending',createdAt:Date.now()});save('halaqi_featured_requests',featuredRequests);renderDeveloper();toast('تم إرسال طلب الاشتراك للمطور')}
+
+function renderSalon(){
+ const s=currentSalon();$('#salonTitle').textContent=s.name;$('#salonTeamCount').textContent=s.members.length;$('#pendingCount').textContent=s.pending.length;$('#salonName').value=s.name;$('#salonBio').value=s.bio||'';$('#salonGallery').innerHTML=(s.gallery||[]).map(x=>`<img src="${x}">`).join('');
+ $('#joinRequests').innerHTML=s.pending.length?s.pending.map(id=>{const b=barbers.find(x=>x.id===id);return `<div class="teamMember"><div><b>${esc(b?.name||id)}</b><small>طلب الانضمام</small></div><div><button class="primary" onclick="approveJoin('${id}')">قبول</button> <button class="dangerBtn" onclick="rejectJoin('${id}')">رفض</button></div></div>`}).join(''):'<p style="font-size:9px;color:var(--muted)">لا توجد طلبات.</p>';
+ $('#salonMembers').innerHTML=s.members.map(id=>{const b=barbers.find(x=>x.id===id);return `<div class="teamMember"><div><b>${esc(b?.name||id)}</b><small>${b?.level||''}</small></div><button class="dangerBtn" onclick="removeMember('${id}')">إزالة</button></div>`}).join('')||'<p style="font-size:9px;color:var(--muted)">لا يوجد حلاقون في الفريق.</p>';
+ const incoming=transferRequests.filter(r=>r.toSalonId===s.id&&r.status==='pending');
+ $('#salonTransferRequests').innerHTML=incoming.length?incoming.map(r=>{const b=barbers.find(x=>x.id===r.barberId);return `<div class="transferBox"><b>${esc(b?.name||r.barberId)}</b><p>يريد الانتقال من ${esc(salonName(r.fromSalonId)||'عمل مستقل')} إلى ${esc(s.name)}</p><div style="margin-top:8px"><button class="primary" onclick="approveTransfer('${r.id}')">قبول الانتقال</button> <button class="dangerBtn" onclick="rejectTransfer('${r.id}')">رفض</button></div></div>`}).join(''):'<p style="font-size:9px;color:var(--muted)">لا توجد طلبات انتقال حالياً.</p>'
+}
+function approveJoin(id){const s=currentSalon();s.pending=s.pending.filter(x=>x!==id);if(!s.members.includes(id))s.members.push(id);const b=barbers.find(x=>x.id===id);if(b){const old=b.lastSalonId||b.salonId;b.salonId=s.id;if(old&&old!==s.id)notifyBarberMove(b,old,s.id);b.lastSalonId=null}persistAll();renderSalon();renderAll();toast('تمت الموافقة')}
+function rejectJoin(id){const s=currentSalon();s.pending=s.pending.filter(x=>x!==id);persistAll();renderSalon();toast('تم رفض الطلب')}
+function removeMember(id){const s=currentSalon();s.members=s.members.filter(x=>x!==id);const b=barbers.find(x=>x.id===id);if(b){b.lastSalonId=s.id;b.salonId=null}persistAll();renderAll();toast('تمت إزالة الحلاق من الصالون')}
+function saveSalonProfile(){const s=currentSalon();s.name=$('#salonName').value.trim()||s.name;s.bio=$('#salonBio').value.trim();const files=[...$('#salonMedia').files];if(files.length){let left=files.length;files.forEach(f=>{const r=new FileReader();r.onload=()=>{if(f.type.startsWith('image/'))s.gallery.push(r.result);if(--left===0){save('halaqi_salons',salons);renderSalon();toast('تم حفظ صفحة الصالون')}};r.readAsDataURL(f)})}else{save('halaqi_salons',salons);renderSalon();toast('تم حفظ الصفحة')}}
+
+function requestSalonTransfer(){
+ const b=currentBarber(),to=$('#transferSalonSelect')?.value;if(!to){toast('لا يوجد صالون آخر متاح');return}
+ if(transferRequests.some(r=>r.barberId===b.id&&r.status==='pending')){toast('لديك طلب انتقال قيد الموافقة');return}
+ transferRequests.push({id:'tr'+Date.now(),barberId:b.id,fromSalonId:b.salonId||b.lastSalonId||null,toSalonId:to,status:'pending',createdAt:Date.now()});
+ persistAll();renderBarberAccount();renderSalon();toast('تم إرسال طلب الانتقال إلى الصالون الجديد')
+}
+function leaveCurrentSalon(){
+ const b=currentBarber();if(!b.salonId){toast('أنت تعمل بشكل مستقل حالياً');return}
+ const old=b.salonId,s=salons.find(x=>x.id===old);if(s)s.members=s.members.filter(id=>id!==b.id);b.lastSalonId=old;b.salonId=null;persistAll();renderAll();toast('تم إلغاء الارتباط بالصالون — يمكنك طلب الانضمام لصالون آخر')
+}
+function approveTransfer(id){
+ const r=transferRequests.find(x=>x.id===id);if(!r||r.status!=='pending')return;
+ const b=barbers.find(x=>x.id===r.barberId),newSalon=salons.find(x=>x.id===r.toSalonId);if(!b||!newSalon)return;
+ const oldId=b.salonId||r.fromSalonId||b.lastSalonId||null;
+ if(oldId){const oldSalon=salons.find(x=>x.id===oldId);if(oldSalon)oldSalon.members=oldSalon.members.filter(x=>x!==b.id)}
+ if(!newSalon.members.includes(b.id))newSalon.members.push(b.id);
+ newSalon.pending=(newSalon.pending||[]).filter(x=>x!==b.id);
+ b.salonId=newSalon.id;b.lastSalonId=null;r.status='approved';r.approvedAt=Date.now();
+ bookings.filter(x=>x.barberId===b.id).forEach(x=>{x.salonId=newSalon.id;x.salonName=newSalon.name;x.barberMoved=true});
+ if(oldId&&oldId!==newSalon.id)notifyBarberMove(b,oldId,newSalon.id);
+ persistAll();renderAll();toast('تم نقل الحلاق إلى الصالون الجديد')
+}
+function rejectTransfer(id){const r=transferRequests.find(x=>x.id===id);if(r){r.status='rejected';r.rejectedAt=Date.now();persistAll();renderSalon();renderBarberAccount();toast('تم رفض طلب الانتقال')}}
+function notifyBarberMove(barber,oldSalonId,newSalonId){
+ const oldName=salonName(oldSalonId)||'مكانه السابق',newName=salonName(newSalonId)||'الصالون الجديد';
+ let recipients=new Set();
+ bookings.filter(b=>b.barberId===barber.id).forEach(b=>recipients.add(b.customerId||currentCustomerId));
+ chats.filter(c=>c.barberId===barber.id).forEach(c=>recipients.add(c.customerId));
+ if(!recipients.size)users.filter(u=>u.role==='customer').forEach(u=>recipients.add(u.id));
+ recipients.forEach(uid=>notifications.unshift({id:'nt'+Date.now()+Math.random(),userId:uid,title:'حلاقك انتقل إلى صالون جديد',text:`${barber.name} انتقل من ${oldName} إلى ${newName}. أي حجز قادم معه سيكون في موقع الصالون الجديد.`,barberId:barber.id,oldSalonId,newSalonId,time:Date.now(),read:false,type:'barber_move'}));
+ save('halaqi_notifications',notifications);renderNotifications()
+}
+function startChat(barberId){
+ if(currentRole!=='customer'){toast('الدردشة المباشرة مخصصة بين الزبون والحلاق');return}
+ let c=chats.find(x=>x.customerId===currentCustomerId&&x.barberId===barberId);
+ const b=barbers.find(x=>x.id===barberId);
+ if(!c){c={id:'ch'+Date.now(),customerId:currentCustomerId,customerName:users.find(u=>u.id===currentCustomerId)?.name||'زبون',barberId,barberName:b?.name||'حلاق',messages:[],updatedAt:Date.now()};chats.unshift(c);save('halaqi_chats',chats)}
+ currentChatId=c.id;showScreen('chatScreen');renderChats()
+}
+function openChats(){showScreen('chatScreen');currentChatId=null;renderChats()}
+function openChatThread(id){currentChatId=id;renderChats()}
+function renderChats(){
+ const inbox=$('#chatInbox'),box=$('#chatBox');if(!inbox||!box)return;
+ let list=currentRole==='barber'?chats.filter(c=>c.barberId===currentBarberId):chats.filter(c=>c.customerId===currentCustomerId);
+ list.sort((a,b)=>b.updatedAt-a.updatedAt);
+ inbox.innerHTML=list.length?list.map(c=>{const other=currentRole==='barber'?c.customerName:c.barberName,last=c.messages.at(-1);return `<button class="chatThreadBtn ${c.id===currentChatId?'active':''}" onclick="openChatThread('${c.id}')"><div class="avatar">💬</div><div><b>${esc(other)}</b><small>${last?esc(last.text).slice(0,55):'ابدأ المحادثة'}</small></div></button>`}).join(''):'<div class="card"><p>لا توجد محادثات بعد.</p></div>';
+ if(!currentChatId&&list.length)currentChatId=list[0].id;
+ const c=chats.find(x=>x.id===currentChatId);
+ if(!c){box.classList.add('hidden');return}
+ if(currentRole==='barber'&&c.barberId!==currentBarberId){box.classList.add('hidden');return}
+ if(currentRole==='customer'&&c.customerId!==currentCustomerId){box.classList.add('hidden');return}
+ box.classList.remove('hidden');const other=currentRole==='barber'?c.customerName:c.barberName;
+ $('#chatHeader').innerHTML=`<div class="avatar">💬</div><div><b>${esc(other)}</b><small>${currentRole==='barber'?'زبون':'حلاق • '+esc(salonName(barbers.find(b=>b.id===c.barberId)?.salonId)||'مستقل')}</small></div>`;
+ $('#chatMessages').innerHTML=c.messages.map(m=>{const mine=(currentRole==='barber'&&m.sender==='barber')||(currentRole==='customer'&&m.sender==='customer');return `<div class="msg ${mine?'me':'them'}">${esc(m.text)}<time>${new Date(m.time).toLocaleTimeString('ar-IQ',{hour:'2-digit',minute:'2-digit'})}</time></div>`}).join('')||'<div style="text-align:center;color:var(--muted);font-size:9px;padding:30px">ابدأ المحادثة برسالة.</div>';
+ $('#chatMessages').scrollTop=$('#chatMessages').scrollHeight
+}
+function sendChatMessage(){
+ const c=chats.find(x=>x.id===currentChatId),input=$('#chatInput');if(!c||!input)return;
+ if(!['customer','barber'].includes(currentRole)){toast('الدردشة متاحة للزبون والحلاق فقط');return}
+ const raw=input.value.trim();if(!raw)return;const clean=sanitizeComment(raw);
+ c.messages.push({sender:currentRole==='barber'?'barber':'customer',text:clean,time:Date.now()});c.updatedAt=Date.now();input.value='';save('halaqi_chats',chats);renderChats();
+ if(clean!==raw)toast('تم تنقية كلمات غير مناسبة من الرسالة')
+}
+function openNotifications(){showScreen('notificationsScreen');renderNotifications()}
+function renderNotifications(){
+ let mine=notifications.filter(n=>n.userId===currentCustomerId);
+ if(!mine.length){
+   mine=[{id:'demoMove',userId:currentCustomerId,title:'تحديث من حلاقك',text:'انتقل أحد الحلاقين الذين تتابعهم إلى صالون جديد. اضغط لمعرفة الموقع الجديد.',time:Date.now()-600000,read:false,type:'barber_move'}]
+ }
+ const unread=mine.filter(n=>!n.read).length;
+ const quick=$('#notificationQuickText');if(quick)quick.textContent=unread?`${unread} إشعار جديد`:'لا توجد إشعارات جديدة';
+ const q=$('#notificationsQuick');if(q)q.classList.toggle('unread',unread>0);
+ const preview=$('#customerNotificationsPreview');if(preview)preview.innerHTML=mine.length?`<div class="notice" onclick="openNotifications()" style="cursor:pointer"><b>${esc(mine[0].title)}</b><br>${esc(mine[0].text)}</div>`:'';
+ const list=$('#notificationsList');if(list)list.innerHTML=mine.length?mine.map(n=>`<div class="notificationCard"><div class="notificationIcon">🔔</div><div><b>${esc(n.title)}</b><p>${esc(n.text)}</p><small>${new Date(n.time).toLocaleString('ar-IQ')}</small></div></div>`).join(''):'<p style="font-size:9px;color:var(--muted)">لا توجد إشعارات حالياً.</p>'
+}
+function markNotificationsRead(){notifications.filter(n=>n.userId===currentCustomerId).forEach(n=>n.read=true);save('halaqi_notifications',notifications);renderNotifications();toast('تم تحديد الإشعارات كمقروء')}
+
+function renderDeveloper(){
+ $('#devUsers').textContent=users.length;$('#devBarbers').textContent=barbers.length;$('#devPosts').textContent=posts.length;
+ $('#loginRegistry').innerHTML=users.map(u=>`<div class="loginRow"><div><b>${esc(u.name)}</b><small>${roleArabic(u.role)} • آخر دخول ${new Date(u.lastLogin).toLocaleString('ar-IQ')}</small></div><span class="badge">${esc(u.phone)}</span></div>`).join('');
+ $('#barberLevels').innerHTML=barbers.map(b=>`<div class="loginRow"><div><b>${esc(b.name)}</b><small>★ ${b.rating||'جديد'}</small></div><select style="width:120px;min-height:36px" onchange="changeLevel('${b.id}',this.value)"><option ${b.level==='قيد التدقيق'?'selected':''}>قيد التدقيق</option><option ${b.level==='موثق'?'selected':''}>موثق</option><option ${b.level==='فضي'?'selected':''}>فضي</option><option ${b.level==='ذهبي'?'selected':''}>ذهبي</option><option ${b.level==='خبير'?'selected':''}>خبير</option></select></div>`).join('');
+ $('#socialInstagram').value=social.instagram||'';$('#socialTikTok').value=social.tiktok||'';$('#socialFacebook').value=social.facebook||'';$('#socialYoutube').value=social.youtube||'';
+ $('#featuredRequests').innerHTML=featuredRequests.length?featuredRequests.map(r=>`<div class="loginRow"><div><b>${esc(r.name)}</b><small>${r.status==='pending'?'بانتظار التفعيل':r.status}</small></div>${r.status==='pending'?`<button class="primary" onclick="activateFeatured('${r.id}')">تفعيل 30 يوم</button>`:'<span class="badge">مفعل</span>'}</div>`).join(''):'<p style="font-size:9px;color:var(--muted)">لا توجد طلبات.</p>';
+ renderAnalytics()
+}
+function roleArabic(r){return r==='barber'?'حلاق':r==='salon'?'صالون':r==='developer'?'مطور':'زبون'}
+function changeLevel(id,v){const b=barbers.find(x=>x.id===id);b.level=v;save('halaqi_barbers',barbers);toast('تم تعديل المستوى')}
+function saveSocialLinks(){social={instagram:$('#socialInstagram').value.trim(),tiktok:$('#socialTikTok').value.trim(),facebook:$('#socialFacebook').value.trim(),youtube:$('#socialYoutube').value.trim()};save('halaqi_social',social);renderSocial();toast('تم حفظ الروابط')}
+function renderSocial(){
+ const links=[['Instagram',social.instagram],['TikTok',social.tiktok],['Facebook',social.facebook],['YouTube',social.youtube]].filter(x=>x[1]);
+ $('#socialHome').innerHTML=links.length?`<div class="sectionTitle"><div><h3>تابع حلاقي</h3><small>حسابات التطبيق الرسمية</small></div></div><div class="socialLinks">${links.map(x=>`<a class="socialLink" href="${escAttr(x[1])}" target="_blank">${x[0]}</a>`).join('')}</div>`:''
+}
+function activateFeatured(id){const r=featuredRequests.find(x=>x.id===id),b=barbers.find(x=>x.id===r.barberId);r.status='active';r.expires=Date.now()+30*86400000;b.featuredUntil=r.expires;persistAll();renderDeveloper();renderOnlineBarbers();toast('تم تفعيل الاشتراك وإرسال إشعار تجريبي')}
+function developerAddAccount(){const type=$('#newAccountType').value,name=$('#newAccountName').value.trim(),phone=$('#newAccountPhone').value.trim();if(!name||!phone){toast('أكمل البيانات');return}if(type==='barber'){barbers.push({id:'b'+Date.now(),name,phone,salonId:null,years:1,rating:0,level:'قيد التدقيق',status:'offline',smoking:false,featuredUntil:0,eventPrice:0,eventBio:'',homePrice:0,horizon:7,schedule:{}})}else{salons.push({id:'s'+Date.now(),name,owner:name,bio:'',rating:0,status:'offline',gallery:[],members:[],pending:[]})}users.push({id:'u'+Date.now(),name,role:type,phone,lastLogin:Date.now()});persistAll();renderAll();toast('تمت الإضافة')}
+function toggleAds(){const on=$('#adsSwitch').classList.toggle('on');localStorage.setItem('halaqi_ads',on?'1':'0');toast(on?'تم تشغيل الإعلانات':'تم إيقاف الإعلانات')}
+function renderAnalytics(){
+ const opens=analytics.filter(a=>a.action==='open');$('#openCount').textContent=opens.length;
+ const hours={},days={};analytics.forEach(a=>{hours[a.hour]=(hours[a.hour]||0)+1;days[a.day]=(days[a.day]||0)+1});
+ const maxH=Object.entries(hours).sort((a,b)=>b[1]-a[1])[0],maxD=Object.entries(days).sort((a,b)=>b[1]-a[1])[0];const dn=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+ $('#busyHour').textContent=maxH?maxH[0]+':00':'—';$('#busyDay').textContent=maxD?dn[maxD[0]]:'—';
+ $('#dayAnalytics').innerHTML=Object.entries(days).sort((a,b)=>b[1]-a[1]).map(x=>`<div class="analyticsRow"><b>${dn[x[0]]}</b><span>${x[1]} نشاط</span></div>`).join('')||'<p style="font-size:9px;color:var(--muted)">لا توجد بيانات بعد.</p>';
+ $('#hourAnalytics').innerHTML=Object.entries(hours).sort((a,b)=>b[1]-a[1]).slice(0,8).map(x=>`<div class="analyticsRow"><b>${x[0]}:00</b><span>${x[1]} نشاط</span></div>`).join('')
+}
+
+function toggleDark(){
+ document.body.classList.toggle('dark');
+ const d=document.body.classList.contains('dark');
+ const sw=$('#darkSwitch'); if(sw) sw.classList.toggle('on',d);
+ const q=$('#quickThemeBtn'); if(q) q.textContent=d?'☾':'☀︎';
+ localStorage.setItem('halaqi_dark',d?'1':'0')
+}
+const i18n={ar:{brand:'حلاقي',sub:'موعد حلاقتي',heroTitle:'حلاقتك،<br>بأسلوبك.',heroText:'احجز بسهولة مع حلاق موثوق قريب منك، أو استكشف القصات والخدمات أولاً.',bookExperience:'احجز الآن',explore:'استكشف'},en:{brand:'Halaqi',sub:'My Haircut Appointment',heroTitle:'Your barber, booking<br>and style in one place.',heroText:'See who is available now, combine services, or book quickly without extra details.',bookExperience:'Book your experience',explore:'Explore'}};
+function toggleLanguage(){const en=document.documentElement.lang!=='en';document.documentElement.lang=en?'en':'ar';document.documentElement.dir=en?'ltr':'rtl';$('#langSwitch').classList.toggle('on',en);localStorage.setItem('halaqi_lang',en?'en':'ar');applyLanguage()}
+function applyLanguage(){const lang=localStorage.getItem('halaqi_lang')||'ar',d=i18n[lang];document.documentElement.lang=lang;document.documentElement.dir=lang==='en'?'ltr':'rtl';$('#langSwitch').classList.toggle('on',lang==='en');$('#brandTitle').textContent=d.brand;$('#brandSub').textContent=d.sub;$$('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(d[k])el.innerHTML=d[k]})}
+function money(n){return Number(n||0).toLocaleString('en-US')+' د.ع'}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function escAttr(s){return esc(s)}
+
+function automate(){
+ const now=Date.now();
+ barbers.forEach(b=>{if(b.featuredUntil&&b.featuredUntil<now)b.featuredUntil=0;else if(b.featuredUntil&&b.featuredUntil-now<86400000&&!b.expiryWarned){b.expiryWarned=true;toast(`تنبيه: اشتراك ${b.name} المميز ينتهي خلال يوم`)}})
+ bookings.forEach(b=>{if(!b.reminderSent){const t=new Date(b.day+'T'+b.time).getTime();if(t-now>0&&t-now<3600000){b.reminderSent=true;toast('تذكير: لديك موعد حلاقة خلال أقل من ساعة')}}});
+ persistAll()
+}
+
+function renderAll(){
+ renderNav();renderOnlineBarbers();renderFeed();renderCatalog();renderServices();renderBookingBarbers(false);renderSavedBookings();renderBarberDashboard();renderSchedule();renderSalon();renderDeveloper();renderSocial();renderNotifications();renderChats();applyLanguage();
+ $('#adsSwitch').classList.toggle('on',localStorage.getItem('halaqi_ads')!=='0');$('#darkSwitch').classList.toggle('on',document.body.classList.contains('dark'))
+}
+if(localStorage.getItem('halaqi_dark')==='1')document.body.classList.add('dark');
+const __qt=$('#quickThemeBtn');if(__qt)__qt.textContent=document.body.classList.contains('dark')?'☾':'☀︎';
+track('open');renderAll();showScreen(homeForRole(),false);detectLocation();automate();setInterval(automate,60000);
+</script>
+</body></html>
